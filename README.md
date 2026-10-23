@@ -64,6 +64,14 @@ Soft UI (rounded surfaces, gentle raised/inset shadows) with a light and a dark 
 Edit **`src/data/siteContent.js`**: artist name, tagline, biography, images, social links, releases, videos,
 More Fire copy and booking details.
 
+### Dynamic parts
+
+- Header hides while scrolling down, returns on scroll up, shrinks slightly and shows a reading-progress bar.
+- Home hero: rotating genre word, pointer-tilt portrait, floating genre chips, live equaliser on the latest release.
+- A scrolling ticker, cards that glow where the pointer is, and page titles with a parallax outline word.
+- Shows: the next upcoming show gets a live countdown. Shows move to "Past shows" automatically once their date passes. Add an optional `time: '19:30'` to a show for an exact countdown.
+- Gallery with Shows / More Fire filters and a full-screen viewer (arrow keys and Esc work). It stays hidden until photos exist.
+
 ### Shows and career highlights
 
 `shows` and `milestones` in `siteContent.js` start empty. With no shows the home page displays a friendly "No dates announced yet" card; with no milestones the About timeline stays hidden. Add entries (examples are in the file comments) and they appear automatically.
@@ -78,6 +86,8 @@ Put approved images in `public/images/` using these names (or change the paths i
 | `eddy-about.jpg` | About sections |
 | `more-fire.jpg` | More Fire page hero |
 | `my-love-cover.jpg` | "My Love" release artwork |
+| `shows-1.jpg` … `shows-4.jpg` | Gallery (Shows); the first is also the Shows backdrop |
+| `more-fire-1.jpg` … `more-fire-4.jpg` | Gallery (More Fire) |
 
 Until a photo exists, a styled monogram is shown, so the site always looks finished.
 

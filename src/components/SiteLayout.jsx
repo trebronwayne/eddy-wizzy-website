@@ -98,12 +98,58 @@ function useRouteEffects(pathname) {
   }, [pathname]);
 }
 
-function Header() {
+// Scroll-aware header, reading-progress bar and card spotlight. Everything is throttled with requestAnimationFrame.
+function useScrollEffects() {
+  const [header, setHeader] = useState({ scrolled: false, hidden: false });
+  useEffect(() => {
+    const root = document.documentElement;
+    let last = window.scrollY;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const max = root.scrollHeight - window.innerHeight;
+      root.style.setProperty('--progress', max > 0 ? (y / max).toFixed(4) : '0');
+      root.style.setProperty('--scroll-y', `${Math.round(y)}px`);
+      setHeader((prev) => {
+        const scrolled = y > 24;
+        let hidden = prev.hidden;
+        if (y < 140 || y < last - 4) hidden = false;
+        else if (y > last + 4) hidden = true;
+        return scrolled === prev.scrolled && hidden === prev.hidden ? prev : { scrolled, hidden };
+      });
+      last = y;
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); if (frame) window.cancelAnimationFrame(frame); };
+  }, []);
+
+  useEffect(() => {
+    const SPOT = '.focus-card, .glance-card, .quick-fact, .listen-card, .contact-option, .show-row, .shows-empty, .release-art';
+    const onMove = (event) => {
+      if (event.pointerType !== 'mouse') return;
+      const card = event.target.closest?.(SPOT);
+      if (!card) return;
+      const box = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${event.clientX - box.left}px`);
+      card.style.setProperty('--my', `${event.clientY - box.top}px`);
+    };
+    document.addEventListener('pointermove', onMove, { passive: true });
+    return () => document.removeEventListener('pointermove', onMove);
+  }, []);
+  return header;
+}
+
+function Header({ scrolled, hidden }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const close = () => setOpen(false);
   return (
-    <header className="site-header">
+    <header className={`site-header ${scrolled ? 'is-scrolled' : ''} ${hidden && !open ? 'is-hidden' : ''}`}>
+      <div className="scroll-progress" aria-hidden="true" />
       <div className="header-inner wrap">
         <Link to="/" className="wordmark" onClick={close} aria-label="Eddy Wizzy home">
           <span className="wordmark-mark">EW</span>
@@ -172,10 +218,11 @@ function BackToTop() {
 export default function SiteLayout() {
   const { pathname } = useLocation();
   useRouteEffects(pathname);
+  const header = useScrollEffects();
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
-      <Header />
+      <Header scrolled={header.scrolled} hidden={header.hidden} />
       <main id="main"><Outlet /></main>
       <Footer />
       <BackToTop />

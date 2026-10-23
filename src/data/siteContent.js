@@ -20,6 +20,18 @@ export const siteContent = {
     moreFire: asset('images/more-fire.jpg'),
     myLoveCover: asset('images/my-love-cover.jpg'),
   },
+  // Drop photos into public/images using these names. Only photos that exist are shown;
+  // with none, the gallery stays hidden. Tags create the filter buttons (Shows, More Fire, Portrait).
+  gallery: [
+    { src: asset('images/shows-1.jpg'), alt: 'Eddy Wizzy performing live', caption: 'Live on stage', tag: 'Shows' },
+    { src: asset('images/shows-2.jpg'), alt: 'Eddy Wizzy on stage with the crowd', caption: 'The crowd', tag: 'Shows' },
+    { src: asset('images/shows-3.jpg'), alt: 'Eddy Wizzy at a show', caption: 'Show night', tag: 'Shows' },
+    { src: asset('images/shows-4.jpg'), alt: 'Eddy Wizzy performing', caption: 'On the mic', tag: 'Shows' },
+    { src: asset('images/more-fire-1.jpg'), alt: 'More Fire Entertainment', caption: 'More Fire Entertainment', tag: 'More Fire' },
+    { src: asset('images/more-fire-2.jpg'), alt: 'More Fire Entertainment crew', caption: 'The creative home', tag: 'More Fire' },
+    { src: asset('images/more-fire-3.jpg'), alt: 'More Fire Entertainment session', caption: 'In the studio', tag: 'More Fire' },
+    { src: asset('images/more-fire-4.jpg'), alt: 'More Fire Entertainment moment', caption: 'Behind the music', tag: 'More Fire' },
+  ],
   aboutTitle: 'Music is the message.',
   biography: 'Eddy Wizzy is a Ugandan recording artist and performer associated with More Fire Entertainment. His sound moves across Afrobeat, dancehall and reggae.',
   genres: ['Afrobeat', 'Dancehall', 'Reggae'],
@@ -48,6 +60,7 @@ export const siteContent = {
     name: 'More Fire Entertainment',
     eyebrow: 'THE CREATIVE HOME',
     headline: 'More vision. More sound. More fire.',
+    rotatingWords: ['vision.', 'sound.', 'fire.'],
     intro: 'A creative home for music, collaboration and new projects, connected to the sound of Eddy Wizzy.',
     manifesto: 'Music, people and culture, brought together by a shared drive to create work that moves.',
     focusAreas: [

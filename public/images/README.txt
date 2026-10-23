@@ -1,11 +1,14 @@
-PLACE CLIENT-APPROVED ASSETS HERE
+PLACE CLIENT-APPROVED PHOTOS HERE (JPG, ideally under 400 KB each - resize large photos first)
 
-Suggested files:
-- eddy-hero.jpg       Main artist portrait (portrait/vertical crop works best)
-- eddy-about.jpg      Second portrait for the About section
-- my-love-cover.jpg   Artwork for the My Love release
-- more-fire.jpg       Approved More Fire Entertainment logo/artwork
+Main photos
+- eddy-hero.jpg       Home hero portrait (vertical crop works best)
+- eddy-about.jpg      About sections
+- more-fire.jpg       More Fire page hero
+- my-love-cover.jpg   "My Love" release artwork
 
-The website uses styled placeholder artwork when files are missing. To use different paths,
-edit the `images` object in src/data/siteContent.js.
-Only publish photos and artwork that Eddy / More Fire Entertainment has permission to use.
+Gallery (any that exist appear automatically; missing ones are skipped)
+- shows-1.jpg ... shows-4.jpg          Live shows  (first one also becomes the Shows section backdrop)
+- more-fire-1.jpg ... more-fire-4.jpg  More Fire Entertainment
+
+Need more photos or different names? Edit the `gallery` list in src/data/siteContent.js.
+Only publish photos Eddy / More Fire Entertainment has permission to use.

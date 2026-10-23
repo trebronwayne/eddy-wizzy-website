@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import SiteLayout, { SocialLinks, BrandIcon } from './components/SiteLayout';
 import { siteContent as content } from './data/siteContent';
+import { RotatingWord, Marquee, Equalizer, Countdown, Gallery, useTilt, useAvailableImages } from './components/Dynamic';
 
 function Photo({ src, alt, className = '', fallback = 'EW' }) {
   const [failed, setFailed] = useState(false);
@@ -64,31 +65,51 @@ function formatShowDate(value) {
   return { day: String(date.getDate()).padStart(2, '0'), month: date.toLocaleString('en-GB', { month: 'short' }).toUpperCase() };
 }
 
+const showPhotos = content.gallery.filter((item) => item.tag === 'Shows');
+const dayStart = (value) => new Date(`${value}T00:00:00`).getTime();
+
+function ShowRow({ show }) {
+  const { day, month } = formatShowDate(show.date);
+  return (
+    <li className="show-row">
+      <span className="show-date"><b>{day}</b><small>{month}</small></span>
+      <div className="show-info"><h3>{show.title}</h3><p><MapPin size={14} aria-hidden="true" /> {[show.venue, show.city].filter(Boolean).join(' · ')}</p></div>
+      {show.href && <a className="button button--soft" href={show.href} target="_blank" rel="noreferrer">Details <ArrowUpRight size={16} /></a>}
+    </li>
+  );
+}
+
 function Shows() {
-  const shows = content.shows;
+  const photos = useAvailableImages(showPhotos);
+  const photo = photos && photos[0];
+  const photoStyle = photo ? { '--photo': `url(${photo.src})` } : undefined;
+  const today = new Date().setHours(0, 0, 0, 0);
+  const sorted = [...content.shows].sort((a, b) => a.date.localeCompare(b.date));
+  const upcoming = sorted.filter((show) => dayStart(show.date) >= today);
+  const past = sorted.filter((show) => dayStart(show.date) < today).reverse();
+  const next = upcoming[0];
   return (
     <section className="section-block wrap" id="shows">
       <SectionHeading eyebrow="ON STAGE" title="Upcoming shows." text="Dates, venues and where to catch Eddy live." />
-      {shows.length ? (
-        <ul className="shows-list">
-          {shows.map((show) => {
-            const { day, month } = formatShowDate(show.date);
-            return (
-              <li className="show-row" key={`${show.date}-${show.title}`}>
-                <span className="show-date"><b>{day}</b><small>{month}</small></span>
-                <div className="show-info"><h3>{show.title}</h3><p><MapPin size={14} aria-hidden="true" /> {[show.venue, show.city].filter(Boolean).join(' · ')}</p></div>
-                {show.href && <a className="button button--soft" href={show.href} target="_blank" rel="noreferrer">Details <ArrowUpRight size={16} /></a>}
-              </li>
-            );
-          })}
-        </ul>
+      {next ? (
+        <div className={`next-show ${photo ? 'has-photo' : ''}`} style={photoStyle}>
+          <div className="next-show-copy">
+            <p className="eyebrow"><span className="status-dot" /> NEXT SHOW</p>
+            <h3>{next.title}</h3>
+            <p className="next-show-where"><MapPin size={15} aria-hidden="true" /> {[next.venue, next.city].filter(Boolean).join(' · ')}</p>
+            <Countdown date={next.date} time={next.time} />
+            {next.href && <a className="button button--accent" href={next.href} target="_blank" rel="noreferrer">Show details <ArrowUpRight size={16} /></a>}
+          </div>
+        </div>
       ) : (
-        <div className="shows-empty">
+        <div className={`shows-empty ${photo ? 'has-photo' : ''}`} style={photoStyle}>
           <span className="fact-icon"><CalendarDays size={20} /></span>
           <div><h3>No dates announced yet.</h3><p>Follow the official channels to hear first when new shows are confirmed.</p></div>
           <SocialLinks compact />
         </div>
       )}
+      {upcoming.length > 1 && <ul className="shows-list">{upcoming.slice(1).map((show) => <ShowRow key={`${show.date}-${show.title}`} show={show} />)}</ul>}
+      {past.length > 0 && <details className="past-shows"><summary>Past shows ({past.length})</summary><ul className="shows-list">{past.map((show) => <ShowRow key={`${show.date}-${show.title}`} show={show} />)}</ul></details>}
     </section>
   );
 }
@@ -158,6 +179,8 @@ function EnquiryForm() {
 
 function HomePage() {
   const featuredVideo = content.videos[0];
+  const tilt = useTilt();
+  const marqueeItems = [...new Set([...content.genres, content.moreFire.name, ...content.releases.map((release) => release.title), 'Uganda'])];
   return (
     <>
       <section className="hero wrap">
@@ -165,16 +188,19 @@ function HomePage() {
           <div className="status-line"><span className="status-dot" />{content.heroEyebrow}</div>
           <h1>{content.artistName.split(' ')[0]}<br /><span>WIZZY</span><i>.</i></h1>
           <p className="hero-tagline">{content.heroText}</p>
+          <p className="hero-rotator"><span>THE SOUND OF</span><RotatingWord words={content.genres} /></p>
           <div className="hero-actions"><Link to="/music" className="button button--accent">Explore the music <ArrowUpRight size={17} /></Link><Link to="/about" className="button button--outline">Meet the artist</Link></div>
           <div className="hero-bottom-note"><span className="location-pin"><Globe2 size={14} /></span>{content.locationLine}</div>
         </div>
-        <div className="hero-visual">
+        <div className="hero-visual" {...tilt}>
+          <div className="hero-burst" aria-hidden="true" />
           <div className="hero-grid" />
           <div className="hero-orbit hero-orbit--one" /><div className="hero-orbit hero-orbit--two" />
           <Photo src={content.images.hero} alt={`${content.artistName} portrait`} className="hero-photo" fallback="EW" />
+          <div className="hero-chips" aria-hidden="true">{content.genres.map((genre, i) => <span key={genre} className={`hero-chip hero-chip--${i}`}>{genre}</span>)}</div>
           <div className="hero-vertical-label">MORE FIRE ENTERTAINMENT · UGANDA</div>
           <div className="hero-stamp"><span>THE</span><b>EW</b><span>EXPERIENCE</span></div>
-          <a className="hero-now" href={content.releases[0].href} target="_blank" rel="noreferrer"><span className="hero-now-play"><Play size={15} fill="currentColor" /></span><span><small>LATEST RELEASE</small><b>{content.releases[0].title}</b></span></a>
+          <a className="hero-now" href={content.releases[0].href} target="_blank" rel="noreferrer"><span className="hero-now-play"><Play size={15} fill="currentColor" /></span><span><small>LATEST RELEASE</small><b>{content.releases[0].title}</b></span><Equalizer /></a>
           <div className="hero-caption"><span className="caption-line" />{content.artistTagline}</div>
         </div>
         <div className="hero-side-index">01 <span>/</span> 04</div>
@@ -185,6 +211,8 @@ function HomePage() {
         <div className="quick-fact"><span className="fact-icon"><Headphones size={19} /></span><div><b>Sound in motion</b><small>Afrobeat · Dancehall · Reggae</small></div></div>
         <div className="quick-fact"><span className="fact-icon"><Flame size={19} /></span><div><b>More Fire</b><small>Entertainment</small></div></div>
       </section>
+
+      <Marquee items={marqueeItems} />
 
       <section className="section-block wrap" id="music">
         <SectionHeading eyebrow="THE SOUND" title="On repeat." text="Explore selected releases and discover the sound behind the name." action="All music" to="/music" />
@@ -197,6 +225,8 @@ function HomePage() {
         <div className="about-preview-image"><Photo src={content.images.about} alt={`${content.artistName} artist portrait`} className="about-photo" fallback="EW" /><div className="image-number">01 / ARTIST</div></div>
         <div className="about-preview-copy"><p className="eyebrow">BEHIND THE MUSIC</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><Link to="/about" className="text-link">More about Eddy <ArrowUpRight size={16} /></Link><div className="about-signature">{content.artistName}<span>ARTIST · PERFORMER</span></div></div>
       </section>
+
+      <Gallery eyebrow="MOMENTS" title="In the moment." text="Live shows, the crew and the work behind the sound." id="gallery" />
 
       <section className="more-fire-teaser"><div className="wrap more-fire-inner"><div className="fire-mark"><Flame size={54} strokeWidth={1.1} /></div><div className="more-fire-copy"><p className="eyebrow">THE CREATIVE HOME</p><h2>More Fire<br /><span>Entertainment.</span></h2><p>Meet the label and creative platform connected to Eddy Wizzy.</p><Link to="/more-fire" className="button button--accent">Explore More Fire <ArrowUpRight size={17} /></Link></div><div className="fire-watermark">MF<span>.</span></div></div></section>
       <Shows />
@@ -237,9 +267,10 @@ function AboutPage() {
 function MoreFirePage() {
   const fire = content.moreFire;
   return <div className="more-fire-page">
-    <section className="fire-hero wrap"><div className="fire-hero-copy"><p className="eyebrow"><Flame size={14} /> {fire.eyebrow}</p><h1>MORE FIRE<br /><span>ENTERTAINMENT</span><i>.</i></h1><p className="fire-tagline">{fire.headline}</p><p className="fire-intro">{fire.intro}</p><a href="#focus" className="button button--accent">Explore the vision <ArrowDownRight size={17} /></a></div><div className="fire-hero-art"><Photo src={content.images.moreFire} alt="More Fire Entertainment visual" className="fire-photo" fallback="MF" /><div className="fire-art-stamp"><Flame size={22} /><span>MORE<br />FIRE</span></div><div className="fire-art-caption">MUSIC / PEOPLE / CULTURE</div></div></section>
+    <section className="fire-hero wrap"><div className="fire-hero-copy"><p className="eyebrow"><Flame size={14} /> {fire.eyebrow}</p><h1>MORE FIRE<br /><span>ENTERTAINMENT</span><i>.</i></h1><p className="fire-tagline"><span className="sr-only">{fire.headline}</span><span aria-hidden="true">More <RotatingWord words={fire.rotatingWords} /></span></p><p className="fire-intro">{fire.intro}</p><a href="#focus" className="button button--accent">Explore the vision <ArrowDownRight size={17} /></a></div><div className="fire-hero-art"><Photo src={content.images.moreFire} alt="More Fire Entertainment visual" className="fire-photo" fallback="MF" /><div className="fire-art-stamp"><Flame size={22} /><span>MORE<br />FIRE</span></div><div className="fire-art-caption">MUSIC / PEOPLE / CULTURE</div></div></section>
     <section className="fire-manifesto"><div className="wrap manifesto-inner"><span className="manifesto-number">MF—01</span><h2>A home for<br /><em>what comes next.</em></h2><div><p>{fire.manifesto}</p></div></div></section>
     <section className="section-block wrap" id="focus"><SectionHeading eyebrow="WHAT WE STAND FOR" title="Built around the creative." text="The ideas that shape the music, the people and the projects." /><div className="focus-grid">{fire.focusAreas.map((item) => <article className="focus-card" key={item.number}><span>{item.number}</span><ArrowUpRight className="focus-arrow" size={18} /><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></section>
+    <Gallery tags={['More Fire']} eyebrow="THE CREATIVE HOME" title="Inside More Fire." text="Moments from the people and sessions behind the sound." id="more-fire-gallery" />
     <section className="fire-artist-banner wrap"><div><p className="eyebrow">ARTIST / MORE FIRE ENTERTAINMENT</p><h2>One vision.<br /><span>Many possibilities.</span></h2></div><Photo src={content.images.hero} alt={`${content.artistName} portrait`} className="fire-artist-photo" fallback="EW" /><Link to="/music" className="button button--light">Explore Eddy's music <ArrowUpRight size={17} /></Link></section>
     <BookingStrip />
   </div>;
@@ -260,7 +291,7 @@ function BookingPage() {
 }
 
 function PageShell({ eyebrow, title, intro, number, children }) {
-  return <div className="page-shell"><section className="page-hero wrap"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-intro">{intro}</p></div><span className="page-number">{number} <i>/</i> 04</span></section><div className="wrap page-content">{children}</div><BookingStrip /></div>;
+  return <div className="page-shell"><section className="page-hero wrap"><span className="page-watermark" aria-hidden="true">{eyebrow}</span><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-intro">{intro}</p></div><span className="page-number">{number} <i>/</i> 04</span></section><div className="wrap page-content">{children}</div><BookingStrip /></div>;
 }
 
 function NotFound() {
