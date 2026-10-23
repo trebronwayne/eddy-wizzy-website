@@ -728,3 +728,7 @@ main, .site-footer { overflow-x: clip; }
   .marquee-track { animation: none; }
   .hero-photo { transform: none; }
 }
+
+/* Real photos: keep faces in frame when a portrait is cropped into a wide or short box */
+.photo-frame > img { object-position: center 20%; }
+.release-art--cover .release-art-index { color: #fff; opacity: .85; text-shadow: 0 1px 8px rgba(0, 0, 0, .6); }

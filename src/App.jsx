@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import {
   ArrowDownRight, ArrowRight, ArrowUpRight, Play, Disc3, Headphones,
-  Globe2, Mic2, Flame, Mail, Smartphone, CalendarDays, MapPin, Copy, Check, Send
+  Globe2, Mic2, Flame, Mail, Smartphone, CalendarDays, MapPin, Copy, Check, Send, Phone
 } from 'lucide-react';
 import SiteLayout, { SocialLinks, BrandIcon } from './components/SiteLayout';
 import { siteContent as content } from './data/siteContent';
@@ -24,11 +24,12 @@ function SectionHeading({ eyebrow, title, text, action, to }) {
 }
 
 function ReleaseCard({ release, index }) {
+  const [coverOk, setCoverOk] = useState(Boolean(release.cover));
   return (
     <a href={release.href} className={`release-card ${index === 0 ? 'release-card--featured' : ''}`} target="_blank" rel="noreferrer">
-      <div className={`release-art release-art--${index % 4}`}>
-        {release.cover ? <img src={release.cover} alt={`${release.title} cover`} onError={(e) => { e.currentTarget.style.display = 'none'; }} /> : null}
-        <div className="release-art-type"><span>{release.title}</span><small>{release.kind}</small></div>
+      <div className={`release-art release-art--${index % 4} ${coverOk ? 'release-art--cover' : ''}`}>
+        {release.cover ? <img src={release.cover} alt={`${release.title} cover`} onError={() => setCoverOk(false)} /> : null}
+        {!coverOk && <div className="release-art-type"><span>{release.title}</span><small>{release.kind}</small></div>}
         <span className="release-art-index">0{index + 1}</span>
         <span className="release-play"><Play size={17} fill="currentColor" /></span>
       </div>
@@ -246,7 +247,7 @@ function MusicPage() {
 function VideosPage() {
   return <PageShell eyebrow="WATCH" title={<>Visuals that<br /><span>carry the feeling.</span></>} intro="Music videos and visual stories. New videos can be added by editing the site content file." number="02">
     <div className="videos-list">{content.videos.map((video) => <VideoFeature key={video.youtubeId} video={video} large />)}</div>
-    <a className="button button--accent youtube-more" href="https://www.youtube.com/results?search_query=Eddy+Wizzy+Uganda+official" target="_blank" rel="noreferrer">Find more Eddy Wizzy videos <ArrowUpRight size={17} /></a>
+    <a className="button button--accent youtube-more" href={content.youtubeChannel} target="_blank" rel="noreferrer">Visit the YouTube channel <ArrowUpRight size={17} /></a>
   </PageShell>;
 }
 
@@ -283,8 +284,9 @@ function BookingPage() {
   return <PageShell eyebrow="GET IN TOUCH" title={<>Let’s make<br /><span>something happen.</span></>} intro={content.booking.text} number="04">
     <div className="contact-layout"><div className="contact-lead"><span className="contact-icon"><Mail size={24} /></span><h2>Let’s connect.</h2><p>For shows, bookings, features, collaborations and media enquiries, use the official channels below.</p><SocialLinks /></div><div className="contact-options">
       {hasEmail && <a className="contact-option" href={`mailto:${content.booking.email}`}><span><Mail size={19} /></span><div><b>Booking email</b><small>{content.booking.email}</small></div><ArrowUpRight size={18} /></a>}
-      {hasWhatsapp && <a className="contact-option" href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"><span><Smartphone size={19} /></span><div><b>WhatsApp enquiries</b><small>Open a conversation</small></div><ArrowUpRight size={18} /></a>}
-      <a className="contact-option" href="https://www.youtube.com/results?search_query=Eddy+Wizzy+Uganda+official" target="_blank" rel="noreferrer"><span><Play size={19} /></span><div><b>YouTube</b><small>Videos and music</small></div><ArrowUpRight size={18} /></a>
+      {content.booking.phone && <a className="contact-option" href={`tel:${content.booking.phone.replace(/\s/g, '')}`}><span><Phone size={19} /></span><div><b>Call</b><small>{content.booking.phone}</small></div><ArrowUpRight size={18} /></a>}
+      {hasWhatsapp && <a className="contact-option" href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"><span><Smartphone size={19} /></span><div><b>WhatsApp enquiries</b><small>Chat on WhatsApp</small></div><ArrowUpRight size={18} /></a>}
+      <a className="contact-option" href={content.youtubeChannel} target="_blank" rel="noreferrer"><span><Play size={19} /></span><div><b>YouTube channel</b><small>Videos and music</small></div><ArrowUpRight size={18} /></a>
     </div></div>
     <EnquiryForm />
   </PageShell>;

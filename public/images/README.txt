@@ -4,7 +4,8 @@ Main photos
 - eddy-hero.jpg       Home hero portrait (vertical crop works best)
 - eddy-about.jpg      About sections
 - more-fire.jpg       More Fire page hero
-- my-love-cover.jpg   "My Love" release artwork
+- my-love-cover.jpg   "My Love" release artwork (still missing)
+- pyem-tye-cover.jpg  "Pyem Tye" release artwork
 
 Gallery (any that exist appear automatically; missing ones are skipped)
 - shows-1.jpg ... shows-4.jpg          Live shows  (first one also becomes the Shows section backdrop)

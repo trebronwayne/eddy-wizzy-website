@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ArrowUp, ArrowUpRight, Menu, X } from 'lucide-react';
-import { siX, siYoutube, siSoundcloud, siApplemusic, siInstagram } from 'simple-icons';
+import { siX, siYoutube, siSoundcloud, siApplemusic, siInstagram, siTiktok, siFacebook } from 'simple-icons';
 import { siteContent } from '../data/siteContent';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '../theme';
@@ -29,6 +29,8 @@ const brandIcons = {
   soundcloud: siSoundcloud,
   'apple music': siApplemusic,
   instagram: siInstagram,
+  tiktok: siTiktok,
+  facebook: siFacebook,
 };
 
 export function BrandIcon({ name, size = 16 }) {
