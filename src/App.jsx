@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import {
   ArrowDownRight, ArrowRight, ArrowUpRight, Play, Disc3, Headphones,
-  Globe2, Mic2, Flame, Mail, Smartphone
+  Globe2, Mic2, Flame, Mail, Smartphone, CalendarDays, MapPin, Copy, Check, Send
 } from 'lucide-react';
-import SiteLayout, { SocialLinks } from './components/SiteLayout';
+import SiteLayout, { SocialLinks, BrandIcon } from './components/SiteLayout';
 import { siteContent as content } from './data/siteContent';
 
 function Photo({ src, alt, className = '', fallback = 'EW' }) {
@@ -58,6 +58,104 @@ function BookingStrip() {
   return <section className="booking-strip"><div className="wrap booking-strip-inner"><div><p className="eyebrow">BOOKINGS · COLLABORATIONS · MEDIA</p><h2>{content.booking.heading}</h2><p>{content.booking.text}</p></div><Link to="/booking" className="button button--light">Make an enquiry <ArrowUpRight size={17} /></Link></div></section>;
 }
 
+function formatShowDate(value) {
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return { day: '—', month: value || 'TBA' };
+  return { day: String(date.getDate()).padStart(2, '0'), month: date.toLocaleString('en-GB', { month: 'short' }).toUpperCase() };
+}
+
+function Shows() {
+  const shows = content.shows;
+  return (
+    <section className="section-block wrap" id="shows">
+      <SectionHeading eyebrow="ON STAGE" title="Upcoming shows." text="Dates, venues and where to catch Eddy live." />
+      {shows.length ? (
+        <ul className="shows-list">
+          {shows.map((show) => {
+            const { day, month } = formatShowDate(show.date);
+            return (
+              <li className="show-row" key={`${show.date}-${show.title}`}>
+                <span className="show-date"><b>{day}</b><small>{month}</small></span>
+                <div className="show-info"><h3>{show.title}</h3><p><MapPin size={14} aria-hidden="true" /> {[show.venue, show.city].filter(Boolean).join(' · ')}</p></div>
+                {show.href && <a className="button button--soft" href={show.href} target="_blank" rel="noreferrer">Details <ArrowUpRight size={16} /></a>}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div className="shows-empty">
+          <span className="fact-icon"><CalendarDays size={20} /></span>
+          <div><h3>No dates announced yet.</h3><p>Follow the official channels to hear first when new shows are confirmed.</p></div>
+          <SocialLinks compact />
+        </div>
+      )}
+    </section>
+  );
+}
+
+const enquiryTypes = ['Booking', 'Collaboration', 'Media'];
+
+function EnquiryForm() {
+  const [data, setData] = useState({ name: '', type: 'Booking', date: '', location: '', message: '' });
+  const [copied, setCopied] = useState(false);
+  const email = content.booking.email;
+  const phone = content.booking.whatsappNumber.replace(/\D/g, '');
+  const hasWhatsapp = phone.length > 5;
+  const update = (key) => (event) => { setCopied(false); setData((prev) => ({ ...prev, [key]: event.target.value })); };
+
+  const subject = `${data.type} enquiry — Eddy Wizzy`;
+  const body = [
+    `Hello, my name is ${data.name || '[your name]'}.`,
+    `Enquiry type: ${data.type}`,
+    data.date ? `Date: ${data.date}` : null,
+    data.location ? `Location: ${data.location}` : null,
+    '',
+    data.message,
+  ].filter((line) => line !== null).join('\n');
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(`${subject}\n\n${body}`);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  const submit = (event) => {
+    event.preventDefault();
+    if (email) window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    else if (hasWhatsapp) window.open(`https://wa.me/${phone}?text=${encodeURIComponent(body)}`, '_blank', 'noopener');
+    else copy();
+  };
+
+  const primary = email ? 'Send by email' : hasWhatsapp ? 'Send on WhatsApp' : 'Copy my enquiry';
+
+  return (
+    <form className="enquiry" onSubmit={submit}>
+      <h2>Start an enquiry</h2>
+      <p className="enquiry-note">Fill this in and it becomes a ready-to-send message. Nothing is stored on this website.</p>
+      <fieldset className="segmented">
+        <legend>What is this about?</legend>
+        {enquiryTypes.map((type) => (
+          <label key={type}><input type="radio" name="type" value={type} checked={data.type === type} onChange={update('type')} /><span>{type}</span></label>
+        ))}
+      </fieldset>
+      <div className="field-row">
+        <label className="field"><span>Your name</span><input required value={data.name} onChange={update('name')} autoComplete="name" placeholder="Full name" /></label>
+        <label className="field"><span>Event date <em>(optional)</em></span><input type="date" value={data.date} onChange={update('date')} /></label>
+      </div>
+      <label className="field"><span>City / venue <em>(optional)</em></span><input value={data.location} onChange={update('location')} placeholder="e.g. Kampala" /></label>
+      <label className="field"><span>Your message</span><textarea required rows={5} value={data.message} onChange={update('message')} placeholder="Tell us about the event, project or request." /></label>
+      <div className="enquiry-actions">
+        <button type="submit" className="button button--accent">{primary} <Send size={16} /></button>
+        {(email || hasWhatsapp) && <button type="button" className="button button--soft" onClick={copy}>{copied ? <>Copied <Check size={16} /></> : <>Copy message <Copy size={16} /></>}</button>}
+        {!email && !hasWhatsapp && copied && <span className="copied-note" role="status"><Check size={15} /> Copied. Paste it into a message on any official channel.</span>}
+      </div>
+    </form>
+  );
+}
+
 function HomePage() {
   const featuredVideo = content.videos[0];
   return (
@@ -76,6 +174,7 @@ function HomePage() {
           <Photo src={content.images.hero} alt={`${content.artistName} portrait`} className="hero-photo" fallback="EW" />
           <div className="hero-vertical-label">MORE FIRE ENTERTAINMENT · UGANDA</div>
           <div className="hero-stamp"><span>THE</span><b>EW</b><span>EXPERIENCE</span></div>
+          <a className="hero-now" href={content.releases[0].href} target="_blank" rel="noreferrer"><span className="hero-now-play"><Play size={15} fill="currentColor" /></span><span><small>LATEST RELEASE</small><b>{content.releases[0].title}</b></span></a>
           <div className="hero-caption"><span className="caption-line" />{content.artistTagline}</div>
         </div>
         <div className="hero-side-index">01 <span>/</span> 04</div>
@@ -100,6 +199,7 @@ function HomePage() {
       </section>
 
       <section className="more-fire-teaser"><div className="wrap more-fire-inner"><div className="fire-mark"><Flame size={54} strokeWidth={1.1} /></div><div className="more-fire-copy"><p className="eyebrow">THE CREATIVE HOME</p><h2>More Fire<br /><span>Entertainment.</span></h2><p>Meet the label and creative platform connected to Eddy Wizzy.</p><Link to="/more-fire" className="button button--accent">Explore More Fire <ArrowUpRight size={17} /></Link></div><div className="fire-watermark">MF<span>.</span></div></div></section>
+      <Shows />
       <BookingStrip />
     </>
   );
@@ -109,7 +209,7 @@ function MusicPage() {
   return <PageShell eyebrow="LISTEN" title={<>The music.<br /><span>Always moving.</span></>} intro="Explore releases and jump to the platform where you listen." number="01">
     <div className="music-note"><Disc3 size={22} /><span>RELEASES · SINGLES · COLLABORATIONS</span></div>
     <div className="release-grid release-grid--page">{content.releases.map((release, index) => <ReleaseCard key={release.title} release={release} index={index} />)}</div>
-    <div className="platform-panel"><div><p className="eyebrow">YOUR NEXT LISTEN</p><h2>Find Eddy on your platform.</h2></div><SocialLinks /></div>
+    <div className="platform-panel"><div><p className="eyebrow">YOUR NEXT LISTEN</p><h2>Find Eddy on your platform.</h2></div><div className="listen-grid">{content.socialLinks.map((link) => <a key={link.label} className="listen-card" href={link.href} target="_blank" rel="noreferrer"><span className="listen-icon"><BrandIcon name={link.label} size={20} /></span><div><b>{link.label}</b><small>Open on {link.label}</small></div><ArrowUpRight size={16} aria-hidden="true" /></a>)}</div></div>
   </PageShell>;
 }
 
@@ -123,7 +223,14 @@ function VideosPage() {
 function AboutPage() {
   return <PageShell eyebrow="THE ARTIST" title={<>Meet Eddy<br /><span>Wizzy.</span></>} intro="The voice, the vision and the journey behind the music." number="03">
     <div className="artist-bio-layout"><Photo src={content.images.about} alt={`${content.artistName} portrait`} className="artist-bio-photo" fallback="EW" /><div className="artist-bio-copy"><p className="eyebrow">MUSIC · CULTURE · CONNECTION</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><SocialLinks /></div></div>
-    <div className="genre-row"><span>THE SOUND</span><b>Afrobeat</b><i>×</i><b>Dancehall</b><i>×</i><b>Reggae</b></div>
+    <div className="genre-row"><span>THE SOUND</span>{content.genres.map((genre, i) => <span className="genre-item" key={genre}>{i > 0 && <i>×</i>}<b>{genre}</b></span>)}</div>
+    <div className="glance">{[
+      ['Based in', content.locationLine],
+      ['Sound', content.genres.join(' · ')],
+      ['Creative home', content.moreFire.name],
+      ['Latest release', content.releases[0].title + (content.releases[0].year ? ` (${content.releases[0].year})` : '')],
+    ].map(([label, value]) => <div className="glance-card" key={label}><small>{label}</small><b>{value}</b></div>)}</div>
+    {content.milestones.length > 0 && <div className="timeline-wrap"><p className="eyebrow">THE JOURNEY</p><ol className="timeline">{content.milestones.map((item) => <li key={`${item.year}-${item.title}`}><span>{item.year}</span><div><h3>{item.title}</h3>{item.text && <p>{item.text}</p>}</div></li>)}</ol></div>}
   </PageShell>;
 }
 
@@ -148,6 +255,7 @@ function BookingPage() {
       {hasWhatsapp && <a className="contact-option" href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"><span><Smartphone size={19} /></span><div><b>WhatsApp enquiries</b><small>Open a conversation</small></div><ArrowUpRight size={18} /></a>}
       <a className="contact-option" href="https://www.youtube.com/results?search_query=Eddy+Wizzy+Uganda+official" target="_blank" rel="noreferrer"><span><Play size={19} /></span><div><b>YouTube</b><small>Videos and music</small></div><ArrowUpRight size={18} /></a>
     </div></div>
+    <EnquiryForm />
   </PageShell>;
 }
 

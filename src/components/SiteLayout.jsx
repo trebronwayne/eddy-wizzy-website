@@ -1,8 +1,10 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ArrowUpRight, Menu, X } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Menu, X } from 'lucide-react';
 import { siX, siYoutube, siSoundcloud, siApplemusic, siInstagram } from 'simple-icons';
 import { siteContent } from '../data/siteContent';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '../theme';
 
 const navItems = [
   { to: '/', label: 'Home' },
@@ -29,7 +31,7 @@ const brandIcons = {
   instagram: siInstagram,
 };
 
-function BrandIcon({ name, size = 16 }) {
+export function BrandIcon({ name, size = 16 }) {
   const icon = brandIcons[name.toLowerCase()];
   if (!icon) return <ArrowUpRight size={size} aria-hidden="true" />;
   return (
@@ -57,7 +59,7 @@ const REVEAL = [
   '.section-heading', '.quick-fact', '.release-card', '.video-band-copy', '.video-band-content',
   '.about-preview-image', '.about-preview-copy', '.more-fire-copy', '.booking-strip-inner > div',
   '.focus-card', '.manifesto-inner > *', '.platform-panel', '.artist-bio-layout > *', '.genre-row',
-  '.contact-lead', '.contact-option', '.videos-list > *', '.fire-artist-banner > div:not(.photo-frame)',
+  '.contact-lead', '.contact-option', '.glance-card', '.show-row', '.shows-empty', '.timeline li', '.enquiry', '.listen-card', '.videos-list > *', '.fire-artist-banner > div:not(.photo-frame)',
 ].join(',');
 
 function useRouteEffects(pathname) {
@@ -107,9 +109,12 @@ function Header() {
           <span className="wordmark-mark">EW</span>
           <span className="wordmark-name">EDDY WIZZY<span className="wordmark-dot">.</span><small>OFFICIAL WEBSITE</small></span>
         </Link>
-        <button className="menu-toggle" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen(!open)}>
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="header-actions">
+          <ThemeToggle />
+          <button className="menu-toggle" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen(!open)}>
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
         <nav className={`main-nav ${open ? 'main-nav--open' : ''}`} aria-label="Main navigation">
           {navItems.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.to === '/'} onClick={close} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
@@ -125,6 +130,7 @@ function Header() {
 }
 
 function Footer() {
+  const { followsSystem, matchSystem } = useTheme();
   return (
     <footer className="site-footer">
       <div className="wrap footer-main">
@@ -142,8 +148,24 @@ function Footer() {
         </div>
         <SocialLinks compact />
       </div>
-      <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} Eddy Wizzy. All rights reserved.</span><span>Built for the music.</span></div>
+      <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} Eddy Wizzy. All rights reserved.</span><span className="footer-meta"><button type="button" className="footer-link" onClick={matchSystem} disabled={followsSystem}>{followsSystem ? 'Theme: matches your device' : 'Match my device theme'}</button></span></div>
     </footer>
+  );
+}
+
+function BackToTop() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShow(window.scrollY > 700);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <button type="button" className={`back-to-top ${show ? 'back-to-top--show' : ''}`} aria-label="Back to top" tabIndex={show ? 0 : -1}
+      onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })}>
+      <ArrowUp size={18} aria-hidden="true" />
+    </button>
   );
 }
 
@@ -156,6 +178,7 @@ export default function SiteLayout() {
       <Header />
       <main id="main"><Outlet /></main>
       <Footer />
+      <BackToTop />
     </>
   );
 }

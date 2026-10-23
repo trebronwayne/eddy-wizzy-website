@@ -41,6 +41,15 @@ How it works, so nothing surprises you:
 - Dependencies are pinned and `package-lock.json` is committed so builds are repeatable (`npm ci`).
 - **Custom domain:** add it under Settings → Pages. The base path switches to `/` automatically.
 
+## Design and themes
+
+Soft UI (rounded surfaces, gentle raised/inset shadows) with a light and a dark theme.
+
+- The site follows the visitor's device setting on the first visit and keeps following it if they change it.
+- The sun/moon button in the header switches theme and remembers the choice. "Match my device theme" in the footer clears the choice.
+- All colours live as variables at the top of `src/styles.css` (`:root[data-theme='dark']` and `:root[data-theme='light']`). Change the accent colour there and the whole site follows.
+- `index.html` sets the theme before the page paints, so there is no flash of the wrong theme.
+
 ## Pages
 
 - `/` — Home / hero / releases / video / More Fire
@@ -48,12 +57,16 @@ How it works, so nothing surprises you:
 - `/videos` — embedded YouTube videos
 - `/about` — artist biography
 - `/more-fire` — More Fire Entertainment page
-- `/booking` — bookings and enquiries
+- `/booking` — bookings and enquiries (includes an enquiry form that builds a ready-to-send message; nothing is stored)
 
 ## Editing content
 
 Edit **`src/data/siteContent.js`**: artist name, tagline, biography, images, social links, releases, videos,
 More Fire copy and booking details.
+
+### Shows and career highlights
+
+`shows` and `milestones` in `siteContent.js` start empty. With no shows the home page displays a friendly "No dates announced yet" card; with no milestones the About timeline stays hidden. Add entries (examples are in the file comments) and they appear automatically.
 
 ### Photos
 

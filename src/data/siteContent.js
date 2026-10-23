@@ -22,6 +22,13 @@ export const siteContent = {
   },
   aboutTitle: 'Music is the message.',
   biography: 'Eddy Wizzy is a Ugandan recording artist and performer associated with More Fire Entertainment. His sound moves across Afrobeat, dancehall and reggae.',
+  genres: ['Afrobeat', 'Dancehall', 'Reggae'],
+  // Upcoming shows. Leave empty to show a friendly "no dates yet" message.
+  // Example: { date: '2026-12-20', title: 'Live set', venue: 'Venue name', city: 'Kampala', href: 'https://...' }
+  shows: [],
+  // Optional career highlights for the About page. Leave empty to hide the section.
+  // Example: { year: '2026', title: 'Released "My Love"', text: 'One short sentence.' }
+  milestones: [],
   socialLinks: [
     { label: 'X', href: 'https://x.com/Eddywizzymusic', short: 'X' },
     { label: 'SoundCloud', href: 'https://soundcloud.com/eddy-wizzy-music', short: 'SC' },
