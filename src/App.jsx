@@ -1,19 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import {
   ArrowDownRight, ArrowRight, ArrowUpRight, Play, Disc3, Headphones,
-  Globe2, Mic2, Flame, Mail, Smartphone, CalendarDays, MapPin, Copy, Check, Send, Phone
+  Globe2, Mic2, Flame, Mail, Smartphone, CalendarDays, MapPin, Copy, Check, Send, Phone, Download
 } from 'lucide-react';
 import SiteLayout, { SocialLinks, BrandIcon } from './components/SiteLayout';
 import { siteContent as content } from './data/siteContent';
-import { RotatingWord, Marquee, Equalizer, Countdown, Gallery, useTilt, useAvailableImages } from './components/Dynamic';
+import { RotatingWord, Marquee, Equalizer, Countdown, Gallery, useAvailableImages } from './components/Dynamic';
+import ThemeToggle from './components/ThemeToggle';
+import { useImageSrc } from './lib/images';
 
 function Photo({ src, alt, className = '', fallback = 'EW' }) {
-  const [failed, setFailed] = useState(false);
-  const showFallback = failed || !src;
+  const [current, onError] = useImageSrc(src);
+  const showFallback = !current;
   return (
     <div className={`photo-frame ${className}`} {...(showFallback ? { role: 'img', 'aria-label': alt } : {})}>
-      {!showFallback ? <img src={src} alt={alt} onError={() => setFailed(true)} /> : null}
+      {!showFallback ? <img src={current} alt={alt} decoding="async" onError={onError} /> : null}
       {showFallback && <div className="photo-fallback" aria-hidden="true"><span>{fallback}</span></div>}
     </div>
   );
@@ -24,11 +26,12 @@ function SectionHeading({ eyebrow, title, text, action, to }) {
 }
 
 function ReleaseCard({ release, index }) {
-  const [coverOk, setCoverOk] = useState(Boolean(release.cover));
+  const [cover, onCoverError] = useImageSrc(release.cover);
+  const coverOk = Boolean(cover);
   return (
     <a href={release.href} className={`release-card ${index === 0 ? 'release-card--featured' : ''}`} target="_blank" rel="noreferrer">
       <div className={`release-art release-art--${index % 4} ${coverOk ? 'release-art--cover' : ''}`}>
-        {release.cover ? <img src={release.cover} alt={`${release.title} cover`} onError={() => setCoverOk(false)} /> : null}
+        {coverOk ? <img src={cover} alt={`${release.title} cover`} loading="lazy" decoding="async" onError={onCoverError} /> : null}
         {!coverOk && <div className="release-art-type"><span>{release.title}</span><small>{release.kind}</small></div>}
         <span className="release-art-index">0{index + 1}</span>
         <span className="release-play"><Play size={17} fill="currentColor" /></span>
@@ -39,17 +42,25 @@ function ReleaseCard({ release, index }) {
 }
 
 function VideoFeature({ video, large = false }) {
+  const [playing, setPlaying] = useState(false);
   return (
     <article className={`video-feature ${large ? 'video-feature--large' : ''}`}>
       <div className="video-embed">
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}`}
-          title={`${video.title} — Eddy Wizzy`}
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
+        {playing ? (
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
+            title={`${video.title} — Eddy Wizzy`}
+            referrerPolicy="strict-origin-when-cross-origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        ) : (
+          <button type="button" className="video-facade" onClick={() => setPlaying(true)} aria-label={`Play ${video.title}`}>
+            <img src={`https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" />
+            <span className="video-facade-play"><Play size={26} fill="currentColor" /></span>
+            <span className="video-facade-note">Tap to play · loads only when you press play</span>
+          </button>
+        )}
       </div>
       <div className="video-meta"><div><p className="eyebrow">{video.subtitle}</p><h3>{video.title}</h3></div><a href={video.href} target="_blank" rel="noreferrer" aria-label={`Open ${video.title} on YouTube`}><ArrowUpRight size={18} /></a></div>
     </article>
@@ -178,9 +189,12 @@ function EnquiryForm() {
   );
 }
 
+const heroCutoutItems = [{ src: content.images.heroCutout }];
+
 function HomePage() {
   const featuredVideo = content.videos[0];
-  const tilt = useTilt();
+  const cutoutList = useAvailableImages(heroCutoutItems);
+  const cutout = cutoutList && cutoutList[0];
   const marqueeItems = [...new Set([...content.genres, content.moreFire.name, ...content.releases.map((release) => release.title), 'Uganda'])];
   return (
     <>
@@ -193,14 +207,14 @@ function HomePage() {
           <div className="hero-actions"><Link to="/music" className="button button--accent">Explore the music <ArrowUpRight size={17} /></Link><Link to="/about" className="button button--outline">Meet the artist</Link></div>
           <div className="hero-bottom-note"><span className="location-pin"><Globe2 size={14} /></span>{content.locationLine}</div>
         </div>
-        <div className="hero-visual" {...tilt}>
-          <div className="hero-burst" aria-hidden="true" />
-          <div className="hero-grid" />
+        <div className={`hero-visual ${cutout ? 'hero-visual--cutout' : ''}`}>
+          <div className="hero-glow" aria-hidden="true" />
           <div className="hero-orbit hero-orbit--one" /><div className="hero-orbit hero-orbit--two" />
-          <Photo src={content.images.hero} alt={`${content.artistName} portrait`} className="hero-photo" fallback="EW" />
-          <div className="hero-chips" aria-hidden="true">{content.genres.map((genre, i) => <span key={genre} className={`hero-chip hero-chip--${i}`}>{genre}</span>)}</div>
+          {cutout
+            ? <img className="hero-cutout" src={cutout.src} alt={`${content.artistName} portrait`} fetchPriority="high" decoding="async" />
+            : <Photo src={content.images.hero} alt={`${content.artistName} portrait`} className="hero-photo" fallback="EW" />}
           <div className="hero-vertical-label">MORE FIRE ENTERTAINMENT · UGANDA</div>
-          <div className="hero-stamp"><span>THE</span><b>EW</b><span>EXPERIENCE</span></div>
+          {!cutout && <div className="hero-stamp"><span>THE</span><b>EW</b><span>EXPERIENCE</span></div>}
           <a className="hero-now" href={content.releases[0].href} target="_blank" rel="noreferrer"><span className="hero-now-play"><Play size={15} fill="currentColor" /></span><span><small>LATEST RELEASE</small><b>{content.releases[0].title}</b></span><Equalizer /></a>
           <div className="hero-caption"><span className="caption-line" />{content.artistTagline}</div>
         </div>
@@ -293,13 +307,86 @@ function BookingPage() {
 }
 
 function PageShell({ eyebrow, title, intro, number, children }) {
-  return <div className="page-shell"><section className="page-hero wrap"><span className="page-watermark" aria-hidden="true">{eyebrow}</span><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-intro">{intro}</p></div><span className="page-number">{number} <i>/</i> 04</span></section><div className="wrap page-content">{children}</div><BookingStrip /></div>;
+  return <div className="page-shell"><section className="page-hero wrap"><span className="page-watermark" aria-hidden="true">{eyebrow}</span><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-intro">{intro}</p></div>{number && <span className="page-number">{number} <i>/</i> 04</span>}</section><div className="wrap page-content">{children}</div><BookingStrip /></div>;
 }
 
 function NotFound() {
   return <PageShell eyebrow="NOT FOUND" title={<>This page<br /><span>is off the map.</span></>} intro="The page may have moved. Head back to the homepage." number="00"><Link to="/" className="button button--accent">Back home <ArrowRight size={17} /></Link></PageShell>;
 }
 
+const pressItems = [
+  { src: content.images.heroCutout, label: 'Transparent cut-out', file: 'eddy-wizzy-cutout' },
+  { src: content.images.hero, label: 'Portrait — red coat', file: 'eddy-wizzy-red-coat' },
+  { src: content.images.moreFire, label: 'Portrait — yellow jacket', file: 'eddy-wizzy-yellow-jacket' },
+  { src: content.images.about, label: 'Portrait — all white', file: 'eddy-wizzy-all-white' },
+  ...content.gallery.filter((item) => item.tag === 'Shows').map((item, i) => ({ src: item.src, label: item.caption, file: `eddy-wizzy-live-${i + 1}` })),
+];
+
+function PressPage() {
+  const photos = useAvailableImages(pressItems);
+  const [copied, setCopied] = useState(false);
+  const phone = content.booking.whatsappNumber.replace(/\D/g, '');
+  const copyBio = async () => {
+    try { await navigator.clipboard.writeText(content.biography); setCopied(true); window.setTimeout(() => setCopied(false), 2500); } catch { setCopied(false); }
+  };
+  const facts = [
+    ['Name', content.artistName],
+    ['Based in', content.locationLine],
+    ['Sound', content.genres.join(' · ')],
+    ['Creative home', content.moreFire.name],
+    ['Latest release', content.releases[0].title + (content.releases[0].year ? ` (${content.releases[0].year})` : '')],
+  ];
+  return <PageShell eyebrow="PRESS KIT" title={<>Everything<br /><span>you need.</span></>} intro="Biography, photos and contact details for media, promoters and partners.">
+    <div className="press-bio">
+      <div><p className="eyebrow">SHORT BIOGRAPHY</p><p className="press-bio-text">{content.biography}</p></div>
+      <button type="button" className="button button--soft" onClick={copyBio}>{copied ? <>Copied <Check size={16} /></> : <>Copy bio <Copy size={16} /></>}</button>
+    </div>
+    <div className="glance">{facts.map(([label, value]) => <div className="glance-card" key={label}><small>{label}</small><b>{value}</b></div>)}</div>
+    {photos && photos.length > 0 && <div className="press-photos">
+      <p className="eyebrow">PHOTOS · FREE TO USE FOR PRESS AND PROMOTION OF EDDY WIZZY</p>
+      <div className="press-grid">{photos.map((photo) => {
+        const ext = photo.src.split('?')[0].split('.').pop();
+        return <figure className="press-item" key={photo.src}><div className="press-thumb"><img src={photo.src} alt={photo.label} loading="lazy" decoding="async" /></div><figcaption><span>{photo.label}</span><a href={photo.src} download={`${photo.file}.${ext}`} aria-label={`Download ${photo.label}`}><Download size={16} /></a></figcaption></figure>;
+      })}</div>
+    </div>}
+    <div className="press-contact">
+      <h2>Media and booking contact</h2>
+      <p>For interviews, features, bookings and collaborations.</p>
+      <div className="enquiry-actions">
+        {phone.length > 5 && <a className="button button--accent" href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer">WhatsApp <ArrowUpRight size={16} /></a>}
+        {content.booking.phone && <a className="button button--soft" href={`tel:${content.booking.phone.replace(/\s/g, '')}`}>Call {content.booking.phone}</a>}
+        <Link className="button button--soft" to="/booking">Enquiry form <ArrowRight size={16} /></Link>
+      </div>
+    </div>
+  </PageShell>;
+}
+
+function LinksPage() {
+  useEffect(() => { document.title = 'Eddy Wizzy — Links'; }, []);
+  const phone = content.booking.whatsappNumber.replace(/\D/g, '');
+  const latest = content.releases[0];
+  const others = content.socialLinks.filter((link) => link.label !== 'YouTube');
+  return (
+    <main className="links-page" id="main">
+      <div className="links-top"><Link to="/" className="links-home" aria-label="Eddy Wizzy website home">EW<span>.</span></Link><ThemeToggle /></div>
+      <div className="links-card">
+        <Photo src={content.images.about} alt={`${content.artistName} portrait`} className="links-avatar" fallback="EW" />
+        <h1>{content.artistName}</h1>
+        <p className="links-sub">Ugandan recording artist · {content.moreFire.name}</p>
+        <div className="links-list">
+          <a className="links-btn links-btn--main" href={latest.href} target="_blank" rel="noreferrer"><Play size={18} fill="currentColor" /><span><b>Listen: {latest.title}</b><small>Latest release</small></span><ArrowUpRight size={17} /></a>
+          <a className="links-btn" href={content.youtubeChannel} target="_blank" rel="noreferrer"><BrandIcon name="YouTube" size={18} /><span><b>Watch on YouTube</b><small>Videos and music</small></span><ArrowUpRight size={17} /></a>
+          {phone.length > 5 && <a className="links-btn" href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"><Smartphone size={18} /><span><b>WhatsApp</b><small>Bookings and enquiries</small></span><ArrowUpRight size={17} /></a>}
+          <Link className="links-btn" to="/booking"><Mail size={18} /><span><b>Book Eddy Wizzy</b><small>Shows, features, collaborations</small></span><ArrowRight size={17} /></Link>
+          {others.map((link) => <a key={link.label} className="links-btn" href={link.href} target="_blank" rel="noreferrer"><BrandIcon name={link.label} size={18} /><span><b>{link.label}</b></span><ArrowUpRight size={17} /></a>)}
+          <Link className="links-btn" to="/"><Globe2 size={18} /><span><b>Full website</b><small>Music, videos, About, More Fire</small></span><ArrowRight size={17} /></Link>
+        </div>
+      </div>
+      <p className="links-foot">© {new Date().getFullYear()} {content.artistName} · {content.moreFire.name}</p>
+    </main>
+  );
+}
+
 export default function App() {
-  return <Routes><Route element={<SiteLayout />}><Route index element={<HomePage />} /><Route path="music" element={<MusicPage />} /><Route path="videos" element={<VideosPage />} /><Route path="about" element={<AboutPage />} /><Route path="more-fire" element={<MoreFirePage />} /><Route path="booking" element={<BookingPage />} /><Route path="*" element={<NotFound />} /></Route></Routes>;
+  return <Routes><Route path="links" element={<LinksPage />} /><Route element={<SiteLayout />}><Route index element={<HomePage />} /><Route path="music" element={<MusicPage />} /><Route path="videos" element={<VideosPage />} /><Route path="about" element={<AboutPage />} /><Route path="more-fire" element={<MoreFirePage />} /><Route path="booking" element={<BookingPage />} /><Route path="press" element={<PressPage />} /><Route path="*" element={<NotFound />} /></Route></Routes>;
 }

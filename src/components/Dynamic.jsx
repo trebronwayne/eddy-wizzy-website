@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Flame, X, Expand } from 'lucide-react';
 import { siteContent as content } from '../data/siteContent';
+import { loadFirst } from '../lib/images';
 
 const prefersReducedMotion = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -35,24 +36,6 @@ export function Equalizer() {
   return <span className="eq" aria-hidden="true"><i /><i /><i /><i /></span>;
 }
 
-/* Pointer tilt for the hero portrait. Only on devices with a real pointer. */
-export function useTilt() {
-  const onPointerMove = useCallback((event) => {
-    if (event.pointerType !== 'mouse' || prefersReducedMotion()) return;
-    const box = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - box.left) / box.width - 0.5;
-    const y = (event.clientY - box.top) / box.height - 0.5;
-    event.currentTarget.style.setProperty('--ry', `${(x * 9).toFixed(2)}deg`);
-    event.currentTarget.style.setProperty('--rx', `${(-y * 9).toFixed(2)}deg`);
-    event.currentTarget.style.setProperty('--tx', `${(x * 14).toFixed(1)}px`);
-    event.currentTarget.style.setProperty('--ty', `${(y * 14).toFixed(1)}px`);
-  }, []);
-  const onPointerLeave = useCallback((event) => {
-    ['--ry', '--rx', '--tx', '--ty'].forEach((name) => event.currentTarget.style.removeProperty(name));
-  }, []);
-  return { onPointerMove, onPointerLeave };
-}
-
 /* Live countdown to a date such as "2026-12-20" (optionally with a time like "19:30") */
 export function Countdown({ date, time = '00:00' }) {
   const target = new Date(`${date}T${time}:00`).getTime();
@@ -82,12 +65,8 @@ export function useAvailableImages(items) {
   const [available, setAvailable] = useState(null);
   useEffect(() => {
     let cancelled = false;
-    Promise.all(items.map((item) => new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(item);
-      img.onerror = () => resolve(null);
-      img.src = item.src;
-    }))).then((results) => { if (!cancelled) setAvailable(results.filter(Boolean)); });
+    Promise.all(items.map((item) => loadFirst(item.src).then((src) => (src ? { ...item, src } : null))))
+      .then((results) => { if (!cancelled) setAvailable(results.filter(Boolean)); });
     return () => { cancelled = true; };
   }, [items]);
   return available;

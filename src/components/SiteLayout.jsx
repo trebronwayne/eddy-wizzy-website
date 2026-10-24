@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ArrowUp, ArrowUpRight, Menu, X } from 'lucide-react';
-import { siX, siYoutube, siSoundcloud, siApplemusic, siInstagram, siTiktok, siFacebook } from 'simple-icons';
+import { siX, siYoutube, siSoundcloud, siApplemusic, siInstagram, siTiktok, siFacebook, siWhatsapp } from 'simple-icons';
 import { siteContent } from '../data/siteContent';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '../theme';
@@ -21,6 +21,7 @@ const pageTitles = {
   '/about': 'About — Eddy Wizzy',
   '/more-fire': 'More Fire Entertainment — Eddy Wizzy',
   '/booking': 'Booking & Enquiries — Eddy Wizzy',
+  '/press': 'Press kit — Eddy Wizzy',
 };
 
 const brandIcons = {
@@ -188,7 +189,7 @@ function Footer() {
         </div>
         <nav className="footer-nav" aria-label="Footer navigation">
           <span className="footer-kicker">EXPLORE</span>
-          {[...navItems.slice(1), { to: '/booking', label: 'Booking' }].map((item) => <Link key={item.to} to={item.to}>{item.label}</Link>)}
+          {[...navItems.slice(1), { to: '/booking', label: 'Booking' }, { to: '/press', label: 'Press kit' }, { to: '/links', label: 'Links' }].map((item) => <Link key={item.to} to={item.to}>{item.label}</Link>)}
         </nav>
         <div className="footer-company">
           <span className="footer-kicker">LABEL / CREATIVE HOME</span>
@@ -198,6 +199,17 @@ function Footer() {
       </div>
       <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} Eddy Wizzy. All rights reserved.</span><span className="footer-meta"><button type="button" className="footer-link" onClick={matchSystem} disabled={followsSystem}>{followsSystem ? 'Theme: matches your device' : 'Match my device theme'}</button></span></div>
     </footer>
+  );
+}
+
+function WhatsAppButton() {
+  const number = siteContent.booking.whatsappNumber.replace(/\D/g, '');
+  if (number.length < 6) return null;
+  const text = encodeURIComponent('Hello, I would like to ask about Eddy Wizzy.');
+  return (
+    <a className="whatsapp-fab" href={`https://wa.me/${number}?text=${text}`} target="_blank" rel="noreferrer" aria-label="Chat with Eddy Wizzy's team on WhatsApp">
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d={siWhatsapp.path} /></svg>
+    </a>
   );
 }
 
@@ -227,6 +239,7 @@ export default function SiteLayout() {
       <Header scrolled={header.scrolled} hidden={header.hidden} />
       <main id="main"><Outlet /></main>
       <Footer />
+      <WhatsAppButton />
       <BackToTop />
     </>
   );

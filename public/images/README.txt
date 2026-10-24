@@ -1,15 +1,16 @@
-PLACE CLIENT-APPROVED PHOTOS HERE (JPG, ideally under 400 KB each - resize large photos first)
+PHOTOS (WebP preferred, ideally under 150 KB each; a .jpg with the same name also works)
 
 Main photos
-- eddy-hero.jpg       Home hero portrait (vertical crop works best)
-- eddy-about.jpg      About sections
-- more-fire.jpg       More Fire page hero
-- my-love-cover.jpg   "My Love" release artwork (still missing)
-- pyem-tye-cover.jpg  "Pyem Tye" release artwork
+- eddy-hero.webp        Red-coat portrait (used on the press kit and gallery)
+- eddy-cutout.webp      Transparent cut-out used in the home hero
+- eddy-about.webp       About sections and the /links avatar
+- more-fire.webp        More Fire page hero
+- pyem-tye-cover.webp   "Pyem Tye" artwork
+- my-love-cover.webp    "My Love" artwork (still missing)
 
 Gallery (any that exist appear automatically; missing ones are skipped)
-- shows-1.jpg ... shows-4.jpg          Live shows  (first one also becomes the Shows section backdrop)
-- more-fire-1.jpg ... more-fire-4.jpg  More Fire Entertainment
+- shows-1.webp ... shows-3.webp        Live shows (the first is also the Shows section backdrop)
+- more-fire-1.webp ... more-fire-2.webp  More Fire Entertainment
 
-Need more photos or different names? Edit the `gallery` list in src/data/siteContent.js.
+Edit the `gallery` list in src/data/siteContent.js to add more.
 Only publish photos Eddy / More Fire Entertainment has permission to use.

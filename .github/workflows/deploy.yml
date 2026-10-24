@@ -43,6 +43,8 @@ jobs:
         env:
           # Correct base path for this repository's Pages URL (empty on user sites / custom domains).
           VITE_BASE: ${{ steps.pages.outputs.base_path }}/
+          # Full public address, used for the link-preview image and canonical link.
+          SITE_URL: ${{ steps.pages.outputs.origin }}${{ steps.pages.outputs.base_path }}
 
       # GitHub Pages serves 404.html for unknown paths. Using the app itself as the 404 page
       # lets React Router handle direct links and refreshes such as /music or /booking.

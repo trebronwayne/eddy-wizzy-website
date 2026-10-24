@@ -67,10 +67,26 @@ More Fire copy and booking details.
 ### Dynamic parts
 
 - Header hides while scrolling down, returns on scroll up, shrinks slightly and shows a reading-progress bar.
-- Home hero: rotating genre word, pointer-tilt portrait, floating genre chips, live equaliser on the latest release.
-- A scrolling ticker, cards that glow where the pointer is, and page titles with a parallax outline word.
+- Home hero: cut-out portrait on a soft disc, a rotating genre word and a live equaliser on the latest release.
+- A slow scrolling ticker, a gentle glow on cards under the pointer, and faint outline words behind page titles.
 - Shows: the next upcoming show gets a live countdown. Shows move to "Past shows" automatically once their date passes. Add an optional `time: '19:30'` to a show for an exact countdown.
 - Gallery with Shows / More Fire filters and a full-screen viewer (arrow keys and Esc work). It stays hidden until photos exist.
+
+### Extra pages
+
+- `/press` — press kit: short bio (copy button), quick facts, downloadable photos and the booking contact. Photos listed there appear automatically when the files exist.
+- `/links` — a single-screen "link in bio" page for TikTok, Instagram and YouTube. Put `https://<your-site>/links` in those bios.
+- The green WhatsApp button (bottom right) opens a chat with the number in `siteContent.js` (`booking.whatsappNumber`).
+- Videos load only after a tap, which saves visitors' mobile data.
+- The More Fire page uses an orange accent so it reads as its own brand.
+
+### Link previews (WhatsApp, Facebook, X)
+
+`public/og-image.jpg` (1200×630) is the preview picture. The workflow fills in the site address automatically at build time, so nothing needs editing. After the first deploy, test the link with the Facebook Sharing Debugger to refresh any cached preview. To change the picture, replace the file with another 1200×630 image.
+
+### Photos format
+
+Photos are WebP to keep the site light. If you add a photo as `.jpg` with the same name, the site falls back to it automatically. Convert and shrink at squoosh.app if photos are large.
 
 ### Shows and career highlights
 
