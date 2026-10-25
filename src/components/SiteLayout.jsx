@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ArrowUp, ArrowUpRight, Download, Menu, X } from 'lucide-react';
 import { siX, siYoutube, siSoundcloud, siApplemusic, siInstagram, siTiktok, siFacebook, siWhatsapp } from 'simple-icons';
@@ -57,15 +57,6 @@ export function SocialLinks({ compact = false }) {
   );
 }
 
-// Elements that fade up as they scroll into view. Classes are added by JS only, so the page
-// stays fully visible without JavaScript or when the visitor prefers reduced motion.
-const REVEAL = [
-  '.section-heading', '.quick-fact', '.release-card', '.video-band-copy', '.video-band-content',
-  '.about-preview-image', '.about-preview-copy', '.more-fire-copy', '.booking-strip-inner > div',
-  '.focus-card', '.manifesto-inner > *', '.platform-panel', '.artist-bio-layout > *', '.genre-row',
-  '.contact-lead', '.contact-option', '.glance-card', '.show-row', '.shows-empty', '.timeline li', '.enquiry', '.listen-card', '.videos-list > *', '.fire-artist-banner > div:not(.photo-frame)',
-].join(',');
-
 function useRouteEffects(pathname) {
   // Start every page at the top, like a normal website.
   useLayoutEffect(() => {
@@ -76,89 +67,17 @@ function useRouteEffects(pathname) {
     if (pathname === '/watch') return; // the player page sets its own title (the song name)
     document.title = pageTitles[pathname] || 'Page not found — Eddy Wizzy';
   }, [pathname]);
-
-  useLayoutEffect(() => {
-    if (typeof IntersectionObserver === 'undefined') return undefined;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
-    const els = [...document.querySelectorAll(REVEAL)];
-    els.forEach((el) => {
-      if (el.getBoundingClientRect().top < window.innerHeight * 0.9) return; // already on screen
-      const siblings = el.parentElement ? [...el.parentElement.children].filter((c) => c.matches(REVEAL)) : [el];
-      el.style.transitionDelay = `${Math.min(siblings.indexOf(el), 4) * 80}ms`;
-      el.classList.add('reveal');
-      io.observe(el);
-    });
-    return () => {
-      io.disconnect();
-      els.forEach((el) => { el.classList.remove('reveal', 'is-visible'); el.style.transitionDelay = ''; });
-    };
-  }, [pathname]);
 }
 
-// Scroll-aware header, reading-progress bar and card spotlight. Everything is throttled with requestAnimationFrame.
-function useScrollEffects() {
-  const [header, setHeader] = useState({ scrolled: false, hidden: false });
-  useEffect(() => {
-    const root = document.documentElement;
-    let last = window.scrollY;
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const y = window.scrollY;
-      const max = root.scrollHeight - window.innerHeight;
-      root.style.setProperty('--progress', max > 0 ? (y / max).toFixed(4) : '0');
-      root.style.setProperty('--scroll-y', `${Math.round(y)}px`);
-      setHeader((prev) => {
-        const scrolled = y > 24;
-        let hidden = prev.hidden;
-        if (y < 140 || y < last - 4) hidden = false;
-        else if (y > last + 4) hidden = true;
-        return scrolled === prev.scrolled && hidden === prev.hidden ? prev : { scrolled, hidden };
-      });
-      last = y;
-    };
-    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); if (frame) window.cancelAnimationFrame(frame); };
-  }, []);
-
-  useEffect(() => {
-    const SPOT = '.focus-card, .glance-card, .quick-fact, .listen-card, .contact-option, .show-row, .shows-empty, .release-art';
-    const onMove = (event) => {
-      if (event.pointerType !== 'mouse') return;
-      const card = event.target.closest?.(SPOT);
-      if (!card) return;
-      const box = card.getBoundingClientRect();
-      card.style.setProperty('--mx', `${event.clientX - box.left}px`);
-      card.style.setProperty('--my', `${event.clientY - box.top}px`);
-    };
-    document.addEventListener('pointermove', onMove, { passive: true });
-    return () => document.removeEventListener('pointermove', onMove);
-  }, []);
-  return header;
-}
-
-function Header({ scrolled, hidden }) {
+function Header() {
   const [open, setOpen] = useState(false);
-  const location = useLocation();
   const close = () => setOpen(false);
   return (
-    <header className={`site-header ${scrolled ? 'is-scrolled' : ''} ${hidden && !open ? 'is-hidden' : ''}`}>
-      <div className="scroll-progress" aria-hidden="true" />
+    <header className="site-header">
       <div className="header-inner wrap">
         <Link to="/" className="wordmark" onClick={close} aria-label="Eddy Wizzy home">
-          <span className="wordmark-mark">EW</span>
-          <span className="wordmark-name">EDDY WIZZY<span className="wordmark-dot">.</span><small>OFFICIAL WEBSITE</small></span>
+          <img className="wordmark-mark" src={`${import.meta.env.BASE_URL}images/logo.webp`} alt="" width="36" height="36" />
+          <span className="wordmark-name">EDDY WIZZY<span className="wordmark-dot">.</span></span>
         </Link>
         <div className="header-actions">
           <ThemeToggle />
@@ -175,7 +94,6 @@ function Header({ scrolled, hidden }) {
           <Link className="nav-booking" to="/booking" onClick={close}>Booking <ArrowUpRight size={15} /></Link>
         </nav>
       </div>
-      {location.pathname === '/more-fire' && <div className="sub-brand-line"><span>PART OF THE</span><b>MORE FIRE ENTERTAINMENT</b><span>UNIVERSE</span></div>}
     </header>
   );
 }
@@ -237,15 +155,37 @@ function BackToTop() {
   );
 }
 
+function PageSkeleton() {
+  return (
+    <div className="skeleton" role="status" aria-label="Loading page">
+      <div className="wrap">
+        <div className="sk sk-title" /><div className="sk sk-line" /><div className="sk sk-line sk-line--short" />
+        <div className="sk-grid">{Array.from({ length: 8 }, (_, i) => <div className="sk-card" key={i}><div className="sk sk-thumb" /><div className="sk sk-line" /><div className="sk sk-line sk-line--short" /></div>)}</div>
+      </div>
+    </div>
+  );
+}
+
+// A short skeleton while moving between pages, so a page never "pops" in half-drawn.
+function useSkeleton(pathname) {
+  const [ready, setReady] = useState(pathname);
+  useEffect(() => {
+    if (ready === pathname) return undefined;
+    const timer = window.setTimeout(() => setReady(pathname), 280);
+    return () => window.clearTimeout(timer);
+  }, [pathname, ready]);
+  return ready !== pathname;
+}
+
 export default function SiteLayout() {
   const { pathname } = useLocation();
   useRouteEffects(pathname);
-  const header = useScrollEffects();
+  const loading = useSkeleton(pathname);
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
-      <Header scrolled={header.scrolled} hidden={header.hidden} />
-      <main id="main"><Outlet /></main>
+      <Header />
+      <main id="main">{loading ? <PageSkeleton /> : <Suspense fallback={<PageSkeleton />}><Outlet /></Suspense>}</main>
       <Footer />
       <WhatsAppButton />
       <BackToTop />

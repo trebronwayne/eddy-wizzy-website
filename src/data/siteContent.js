@@ -83,7 +83,7 @@ export const siteContent = {
     ],
   },
   booking: {
-    heading: 'Let’s make something happen.',
+    heading: 'Book Eddy Wizzy',
     text: 'For bookings, collaborations and media enquiries, message Eddy Wizzy on WhatsApp or reach out through his official channels.',
     // Add only a client-approved public booking email or WhatsApp number.
     email: '',

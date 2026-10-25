@@ -1252,3 +1252,90 @@ h1, h2, h3, h4, .wordmark-name, .vthumb-title, .footer-brand, .hero-now b, .song
 .fl, :root[data-theme='light'] .fl { --fl-canvas: var(--bg); --fl-layer: var(--surface); --fl-layer-2: var(--surface-2); --fl-font: var(--font-body); }
 .fl-queue { top: 72px; }
 .fl-player { scroll-margin-top: 76px; }
+
+/* ==========================================================================
+   v11 — premium dark palette, no scroll animation, tighter desktop spacing
+   ========================================================================== */
+
+/* Palette: graphite and warm off-white with one restrained gold accent */
+:root, :root[data-theme='dark'] {
+  --bg: #0b0c0e; --surface: #131518; --surface-2: #1a1d21;
+  --text: #eceae6; --text-2: #c4c2bc; --muted: #8c8f95;
+  --line: rgba(255, 255, 255, .08); --line-strong: rgba(255, 255, 255, .2);
+  --accent: #d4b06a; --accent-2: #e2c286; --accent-text: #dcbb7e; --on-accent: #1a1407; --accent-soft: rgba(212, 176, 106, .12);
+  --header-bg: rgba(11, 12, 14, .88);
+  --ph-1: #1a1d21; --ph-2: #20242a; --ph-3: #261f1a;
+  --art-0: linear-gradient(145deg, #23262b, #181a1e);
+  --art-1: linear-gradient(145deg, #2c2520, #1c1815);
+  --art-2: linear-gradient(145deg, #24262e, #191a20);
+  --art-3: linear-gradient(145deg, #1f2828, #161c1c);
+  --art-text: #eceae6;
+}
+:root[data-theme='light'] {
+  --accent: #d4a94f; --accent-2: #e0b963; --accent-text: #7a5810; --on-accent: #1c1405; --accent-soft: rgba(176, 128, 30, .14);
+  --art-0: linear-gradient(145deg, #ebe4d4, #ddd2b8);
+  --art-1: linear-gradient(145deg, #f1ddd0, #e4c6b0);
+  --art-2: linear-gradient(145deg, #e3e2ee, #d0cfe3);
+  --art-3: linear-gradient(145deg, #dde7e4, #c6d6d1);
+}
+.fl, :root[data-theme='light'] .fl { --fl-brand-tint: var(--accent-soft); }
+.cutout-stage--green { --tint: rgba(212, 176, 106, .2); }
+.hero-glow { background: var(--surface-2); border: 1px solid var(--line); }
+.more-fire-copy .button--accent { background: #0b0c0e; color: #f1e6cf; }
+.status-dot { box-shadow: none; animation: none; }
+
+/* Logo from Eddy's portrait */
+.wordmark-mark { display: block; object-fit: cover; padding: 0; background: var(--surface-2); }
+
+/* Calm: nothing animates while scrolling or on load */
+.reveal { opacity: 1; transform: none; transition: none; }
+.hero-copy > *, .hero-visual, .page-hero h1, .page-intro { animation: none !important; }
+.song-card:hover .song-thumb img, .vthumb:hover img, .latest-art:hover img, .latest-mini:hover img { transform: none; }
+.song-card::before, .focus-card::before, .listen-card::before { display: none; }
+.scroll-progress { display: none; }
+
+/* Plain headings: labels above headings are hidden except where they carry information */
+.eyebrow { display: none; }
+.latest-copy .eyebrow, .latest-mini .eyebrow, .video-meta .eyebrow { display: flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+.status-dot { background: var(--accent); }
+
+/* Skeleton shown for a moment between pages */
+.skeleton { padding-block: clamp(28px, 5vw, 48px) 80px; min-height: 60vh; }
+.sk { position: relative; overflow: hidden; background: var(--surface-2); border-radius: var(--r-sm); }
+.sk::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .06), transparent); animation: shimmer 1.3s ease-in-out infinite; }
+:root[data-theme='light'] .sk::after { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .7), transparent); }
+@keyframes shimmer { to { transform: translateX(100%); } }
+.sk-title { height: 36px; width: min(320px, 60%); margin-bottom: 18px; }
+.sk-line { height: 14px; width: min(560px, 92%); margin-bottom: 10px; }
+.sk-line--short { width: min(300px, 55%); }
+.sk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 20px; margin-top: 32px; }
+.sk-card { display: grid; gap: 10px; }
+.sk-thumb { aspect-ratio: 16 / 9; border-radius: var(--r); }
+@media (prefers-reduced-motion: reduce) { .sk::after { animation: none; } }
+
+/* Desktop: tighter, so nothing feels stretched (phones and tablets keep their spacing) */
+@media (min-width: 1021px) {
+  :root { --max: 1080px; }
+  .wrap, .video-band, .more-fire-teaser, .booking-strip { width: min(var(--max), calc(100% - 64px)); }
+  .hero { padding-block: 36px 44px; gap: 40px; }
+  .hero-visual, .hero-visual--cutout { height: 400px; }
+  .section-block, .about-preview { padding-block: 44px; }
+  .section-heading { margin-bottom: 22px; }
+  .about-preview { gap: 40px; }
+  .about-photo.cutout-stage { height: 380px; }
+  .artist-bio-photo.cutout-stage { height: 420px; }
+  .fire-hero-art { height: 360px; }
+  .fire-hero { padding-block: 40px 48px; }
+  .page-hero { padding-block: 36px 12px; }
+  .page-content { padding-block: 12px 56px; }
+  .latest-feature { gap: 32px; padding: 24px; }
+  .latest-more { gap: 16px; margin-top: 16px; }
+  .song-grid, .video-grid, #favourites .video-grid { gap: 16px; }
+  .more-fire-inner { padding-block: 32px; }
+  .booking-strip { padding: 28px 36px; }
+  .platform-panel { padding: 24px 28px; margin-top: 36px; }
+  .site-footer { margin-top: 40px; }
+  .footer-grid { padding-block: 36px 24px; }
+}
+.focus-card::after, .glance-card::after, .quick-fact::after, .listen-card::after, .contact-option::after, .show-row::after, .shows-empty::after { display: none; }
+@media (min-width: 1021px) { .site-footer { margin-top: 40px; padding-top: 36px; } .footer-main { gap: 28px; } }

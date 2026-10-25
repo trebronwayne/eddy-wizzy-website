@@ -3,9 +3,9 @@
    - Site files (JS, CSS, photos, icons): saved on first use, served instantly afterwards.
    - Only this website's own files are saved. Videos, fonts and links elsewhere are left alone.
    Change VERSION to force every visitor to refresh the saved files. */
-const VERSION = 'ew-v5';
+const VERSION = 'ew-v7';
 const SCOPE = self.registration.scope;
-const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'favicon.svg', 'images/eddy-cutout.webp'].map((path) => new URL(path, SCOPE).href);
+const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'favicon.ico', 'images/eddy-cutout.webp'].map((path) => new URL(path, SCOPE).href);
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

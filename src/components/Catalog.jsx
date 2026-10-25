@@ -19,7 +19,7 @@ export function LatestRelease() {
   return (
     <section className="section-block wrap latest" id="latest">
       <div className="section-heading">
-        <div><p className="eyebrow">LATEST RELEASE</p><h2>Fresh from the fire.</h2></div>
+        <div><p className="eyebrow">LATEST RELEASE</p><h2>Latest release</h2></div>
         <Link className="text-link" to="/music">All songs <ArrowUpRight size={16} /></Link>
       </div>
       <div className="latest-feature">

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, useEffect, useMemo, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import {
   ArrowDownRight, ArrowRight, ArrowUpRight, Play, Disc3, Headphones,
@@ -11,7 +11,7 @@ import ThemeToggle from './components/ThemeToggle';
 import { Catalog, LatestRelease, LivePerformances, MostWatched } from './components/Catalog';
 import { songs as catalogSongs } from './data/catalog';
 import { watchPath } from './lib/tracks';
-import WatchPage from './components/Watch';
+const WatchPage = lazy(() => import('./components/Watch'));
 import { useImageSrc } from './lib/images';
 
 function Photo({ src, alt, className = '', fallback = 'EW' }) {
@@ -189,12 +189,10 @@ function HomePage() {
     <>
       <section className="hero wrap">
         <div className="hero-copy">
-          <div className="status-line"><span className="status-dot" />{content.heroEyebrow}</div>
           <h1>{content.artistName}</h1>
           <p className="hero-tagline">{content.heroText}</p>
           <p className="hero-genres">{content.genres.join(' · ')}</p>
           <div className="hero-actions"><Link to="/music" className="button button--accent">Explore the music <ArrowUpRight size={17} /></Link><Link to="/about" className="button button--outline">Meet the artist</Link></div>
-          <div className="hero-bottom-note"><span className="location-pin"><Globe2 size={14} /></span>{content.locationLine}</div>
         </div>
         <div className={`hero-visual ${cutout ? 'hero-visual--cutout' : ''}`}>
           <div className="hero-glow" aria-hidden="true" />
@@ -208,7 +206,7 @@ function HomePage() {
       <LatestRelease />
 
       <section className="section-block wrap" id="favourites">
-        <SectionHeading eyebrow="FAN FAVOURITES" title="The ones everyone plays." action="All videos" to="/videos" />
+        <SectionHeading eyebrow="FAN FAVOURITES" title="Popular songs" action="All videos" to="/videos" />
         <MostWatched count={4} />
       </section>
 
@@ -225,16 +223,16 @@ function HomePage() {
 }
 
 function MusicPage() {
-  return <PageShell eyebrow="LISTEN" title={<>The music.</>} intro="Every song in one place. Pick one and it plays on its own page, with the full playlist beside it." number="01">
+  return <PageShell eyebrow="LISTEN" title="Music" intro="Every song in one place. Pick one and it plays on its own page, with the full playlist beside it." number="01">
     <Catalog />
-    <div className="platform-panel"><div><p className="eyebrow">YOUR NEXT LISTEN</p><h2>Find Eddy on your platform.</h2></div><div className="listen-grid">{content.socialLinks.map((link) => <a key={link.label} className="listen-card" href={link.href} target="_blank" rel="noreferrer"><span className="listen-icon"><BrandIcon name={link.label} size={20} /></span><div><b>{link.label}</b><small>Open on {link.label}</small></div><ArrowUpRight size={16} aria-hidden="true" /></a>)}</div></div>
+    <div className="platform-panel"><div><p className="eyebrow">YOUR NEXT LISTEN</p><h2>Listen elsewhere</h2></div><div className="listen-grid">{content.socialLinks.map((link) => <a key={link.label} className="listen-card" href={link.href} target="_blank" rel="noreferrer"><span className="listen-icon"><BrandIcon name={link.label} size={20} /></span><div><b>{link.label}</b><small>Open on {link.label}</small></div><ArrowUpRight size={16} aria-hidden="true" /></a>)}</div></div>
   </PageShell>;
 }
 
 function VideosPage() {
-  return <PageShell eyebrow="WATCH" title={<>Watch.</>} intro="The newest video, the most watched songs and live performances from Uganda, South Sudan and London." number="02">
+  return <PageShell eyebrow="WATCH" title="Videos" intro="The newest video, the most watched songs and live performances from Uganda, South Sudan and London." number="02">
     <div className="videos-list">{content.videos.map((video) => <VideoFeature key={video.youtubeId} video={video} large />)}</div>
-    <div className="video-section"><p className="eyebrow">FAN FAVOURITES</p><h2>The ones everyone plays.</h2><MostWatched /></div>
+    <div className="video-section"><p className="eyebrow">FAN FAVOURITES</p><h2>Popular songs</h2><MostWatched /></div>
     <div className="video-section"><p className="eyebrow">ON STAGE</p><h2>Live performances.</h2><LivePerformances /></div>
     <div className="video-actions">
       <a className="button button--accent youtube-more" href={content.youtubeChannel} target="_blank" rel="noreferrer">Visit the YouTube channel <ArrowUpRight size={17} /></a>
@@ -244,7 +242,7 @@ function VideosPage() {
 }
 
 function AboutPage() {
-  return <PageShell eyebrow="THE ARTIST" title={<>Meet Eddy<br /><span>Wizzy.</span></>} intro="The voice, the vision and the journey behind the music." number="03">
+  return <PageShell eyebrow="THE ARTIST" title="About Eddy Wizzy" intro="The voice, the vision and the journey behind the music." number="03">
     <div className="artist-bio-layout"><CutoutPortrait cutout={content.images.aboutCutout} photo={content.images.about} alt={`${content.artistName} portrait`} tint="green" className="artist-bio-photo" /><div className="artist-bio-copy"><p className="eyebrow">MUSIC · CULTURE · CONNECTION</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><SocialLinks /></div></div>
     <div className="genre-row"><span>THE SOUND</span>{content.genres.map((genre, i) => <span className="genre-item" key={genre}>{i > 0 && <i>×</i>}<b>{genre}</b></span>)}</div>
     <div className="glance">{[
@@ -276,8 +274,8 @@ function BookingPage() {
   const hasEmail = Boolean(content.booking.email);
   const phone = content.booking.whatsappNumber.replace(/\D/g, '');
   const hasWhatsapp = phone.length > 5;
-  return <PageShell eyebrow="GET IN TOUCH" title={<>Let’s make<br /><span>something happen.</span></>} intro={content.booking.text} number="04">
-    <div className="contact-layout"><div className="contact-lead"><span className="contact-icon"><Mail size={24} /></span><h2>Let’s connect.</h2><p>For shows, bookings, features, collaborations and media enquiries, use the official channels below.</p><SocialLinks /></div><div className="contact-options">
+  return <PageShell eyebrow="GET IN TOUCH" title="Booking" intro={content.booking.text} number="04">
+    <div className="contact-layout"><div className="contact-lead"><span className="contact-icon"><Mail size={24} /></span><h2>Contact</h2><p>For shows, bookings, features, collaborations and media enquiries, use the official channels below.</p><SocialLinks /></div><div className="contact-options">
       {hasEmail && <a className="contact-option" href={`mailto:${content.booking.email}`}><span><Mail size={19} /></span><div><b>Booking email</b><small>{content.booking.email}</small></div><ArrowUpRight size={18} /></a>}
       {content.booking.phone && <a className="contact-option" href={`tel:${content.booking.phone.replace(/\s/g, '')}`}><span><Phone size={19} /></span><div><b>Call</b><small>{content.booking.phone}</small></div><ArrowUpRight size={18} /></a>}
       {hasWhatsapp && <a className="contact-option" href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"><span><Smartphone size={19} /></span><div><b>WhatsApp enquiries</b><small>Chat on WhatsApp</small></div><ArrowUpRight size={18} /></a>}
@@ -292,7 +290,7 @@ function PageShell({ eyebrow, title, intro, number, children }) {
 }
 
 function NotFound() {
-  return <PageShell eyebrow="NOT FOUND" title={<>This page<br /><span>is off the map.</span></>} intro="The page may have moved. Head back to the homepage." number="00"><Link to="/" className="button button--accent">Back home <ArrowRight size={17} /></Link></PageShell>;
+  return <PageShell eyebrow="NOT FOUND" title="Page not found" intro="The page may have moved. Head back to the homepage." number="00"><Link to="/" className="button button--accent">Back home <ArrowRight size={17} /></Link></PageShell>;
 }
 
 const pressItems = [
@@ -320,7 +318,7 @@ function PressPage() {
     ['Latest release', content.releases[0].title],
     ['Songs', `${Math.floor(catalogSongs.length / 5) * 5}+ released`],
   ];
-  return <PageShell eyebrow="PRESS KIT" title={<>Everything<br /><span>you need.</span></>} intro="Biography, photos and contact details for media, promoters and partners.">
+  return <PageShell eyebrow="PRESS KIT" title="Press kit" intro="Biography, photos and contact details for media, promoters and partners.">
     <div className="press-bio">
       <div><p className="eyebrow">SHORT BIOGRAPHY</p><p className="press-bio-text">{content.biography}</p></div>
       <button type="button" className="button button--soft" onClick={copyBio}>{copied ? <>Copied <Check size={16} /></> : <>Copy bio <Copy size={16} /></>}</button>
