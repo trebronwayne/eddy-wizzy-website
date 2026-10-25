@@ -9,7 +9,9 @@ import { siteContent as content } from './data/siteContent';
 import { RotatingWord, Marquee, Equalizer, Countdown, Gallery, useAvailableImages } from './components/Dynamic';
 import ThemeToggle from './components/ThemeToggle';
 import { Catalog, Collaborations, LatestRelease, LivePerformances, MostWatched, StatsStrip } from './components/Catalog';
-import { catalogMeta, songs as catalogSongs } from './data/catalog';
+import { songs as catalogSongs } from './data/catalog';
+import { watchPath } from './lib/tracks';
+import WatchPage from './components/Watch';
 import { useImageSrc } from './lib/images';
 
 function Photo({ src, alt, className = '', fallback = 'EW' }) {
@@ -42,25 +44,14 @@ function SectionHeading({ eyebrow, title, text, action, to }) {
 }
 
 function VideoFeature({ video, large = false }) {
-  const [playing, setPlaying] = useState(false);
   return (
     <article className={`video-feature ${large ? 'video-feature--large' : ''}`}>
       <div className="video-embed">
-        {playing ? (
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
-            title={`${video.title} — Eddy Wizzy`}
-            referrerPolicy="strict-origin-when-cross-origin"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          />
-        ) : (
-          <button type="button" className="video-facade" onClick={() => setPlaying(true)} aria-label={`Play ${video.title}`}>
-            <img src={`${import.meta.env.BASE_URL}covers/${video.youtubeId}.webp`} alt="" loading="lazy" decoding="async" onError={(event) => { const img = event.currentTarget; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`; } }} />
-            <span className="video-facade-play"><Play size={26} fill="currentColor" /></span>
-            <span className="video-facade-note">Tap to play · loads only when you press play</span>
-          </button>
-        )}
+        <Link className="video-facade" to={watchPath(video.youtubeId)} aria-label={`Play ${video.title}`}>
+          <img src={`${import.meta.env.BASE_URL}covers/${video.youtubeId}.webp`} alt="" loading="lazy" decoding="async" onError={(event) => { const img = event.currentTarget; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`; } }} />
+          <span className="video-facade-play"><Play size={26} fill="currentColor" /></span>
+          <span className="video-facade-note">Press play · opens the player page</span>
+        </Link>
       </div>
       <div className="video-meta"><div><p className="eyebrow">{video.subtitle}</p><h3>{video.title}</h3></div><a href={video.href} target="_blank" rel="noreferrer" aria-label={`Open ${video.title} on YouTube`}><ArrowUpRight size={18} /></a></div>
     </article>
@@ -216,7 +207,7 @@ function HomePage() {
             : <Photo src={content.images.hero} alt={`${content.artistName} portrait`} className="hero-photo" fallback="EW" />}
           <div className="hero-vertical-label">MORE FIRE ENTERTAINMENT · UGANDA</div>
           {!cutout && <div className="hero-stamp"><span>THE</span><b>EW</b><span>EXPERIENCE</span></div>}
-          <a className="hero-now" href={content.releases[0].href} target="_blank" rel="noreferrer"><span className="hero-now-play"><Play size={15} fill="currentColor" /></span><span><small>LATEST RELEASE</small><b>{content.releases[0].title}</b></span><Equalizer /></a>
+          <Link className="hero-now" to={watchPath(content.releases[0].youtubeId)}><span className="hero-now-play"><Play size={15} fill="currentColor" /></span><span><small>LATEST RELEASE</small><b>{content.releases[0].title}</b></span><Equalizer /></Link>
           <div className="hero-caption"><span className="caption-line" />{content.artistTagline}</div>
         </div>
         <div className="hero-side-index">01 <span>/</span> 04</div>
@@ -262,7 +253,7 @@ function MusicPage() {
 function VideosPage() {
   return <PageShell eyebrow="WATCH" title={<>Visuals that<br /><span>carry the feeling.</span></>} intro="The newest video, the most watched songs and live performances from Uganda, South Sudan and London." number="02">
     <div className="videos-list">{content.videos.map((video) => <VideoFeature key={video.youtubeId} video={video} large />)}</div>
-    <div className="video-section"><p className="eyebrow">MOST WATCHED</p><h2>The ones everyone plays.</h2><MostWatched /></div>
+    <div className="video-section"><p className="eyebrow">FAN FAVOURITES</p><h2>The ones everyone plays.</h2><MostWatched /></div>
     <div className="video-section"><p className="eyebrow">ON STAGE</p><h2>Live performances.</h2><LivePerformances /></div>
     <div className="video-actions">
       <a className="button button--accent youtube-more" href={content.youtubeChannel} target="_blank" rel="noreferrer">Visit the YouTube channel <ArrowUpRight size={17} /></a>
@@ -281,7 +272,7 @@ function AboutPage() {
       ['Sound', content.genres.join(' · ')],
       ['Creative home', content.moreFire.name],
       ['Latest release', content.releases[0].title],
-      ['On YouTube', `${catalogMeta.subscribers} subscribers`],
+      ['Songs', `${Math.floor(catalogSongs.length / 5) * 5}+ released`],
     ].map(([label, value]) => <div className="glance-card" key={label}><small>{label}</small><b>{value}</b></div>)}</div>
     {content.milestones.length > 0 && <div className="timeline-wrap"><p className="eyebrow">THE JOURNEY</p><ol className="timeline">{content.milestones.map((item) => <li key={`${item.year}-${item.title}`}><span>{item.year}</span><div><h3>{item.title}</h3>{item.text && <p>{item.text}</p>}</div></li>)}</ol></div>}
   </PageShell>;
@@ -345,7 +336,7 @@ function PressPage() {
     ['Sound', content.genres.join(' · ')],
     ['Creative home', content.moreFire.name],
     ['Latest release', content.releases[0].title],
-    ['YouTube', `${catalogMeta.subscribers} subscribers · ${Math.floor(catalogMeta.listedViews / 1e6)}M+ views`],
+    ['Songs', `${Math.floor(catalogSongs.length / 5) * 5}+ released`],
   ];
   return <PageShell eyebrow="PRESS KIT" title={<>Everything<br /><span>you need.</span></>} intro="Biography, photos and contact details for media, promoters and partners.">
     <div className="press-bio">
@@ -385,7 +376,7 @@ function LinksPage() {
         <h1>{content.artistName}</h1>
         <p className="links-sub">Ugandan recording artist · {content.moreFire.name}</p>
         <div className="links-list">
-          <a className="links-btn links-btn--main" href={latest.href} target="_blank" rel="noreferrer"><Play size={18} fill="currentColor" /><span><b>Watch: {latest.title}</b><small>Latest release</small></span><ArrowUpRight size={17} /></a>
+          <Link className="links-btn links-btn--main" to={watchPath(latest.youtubeId)}><Play size={18} fill="currentColor" /><span><b>Watch: {latest.title}</b><small>Latest release</small></span><ArrowRight size={17} /></Link>
           <a className="links-btn" href={content.youtubeChannel} target="_blank" rel="noreferrer"><BrandIcon name="YouTube" size={18} /><span><b>Watch on YouTube</b><small>Videos and music</small></span><ArrowUpRight size={17} /></a>
           {phone.length > 5 && <a className="links-btn" href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"><Smartphone size={18} /><span><b>WhatsApp</b><small>Bookings and enquiries</small></span><ArrowUpRight size={17} /></a>}
           <Link className="links-btn" to="/music"><Headphones size={18} /><span><b>All songs and videos</b><small>{catalogSongs.length} songs to watch and listen</small></span><ArrowRight size={17} /></Link>
@@ -400,5 +391,5 @@ function LinksPage() {
 }
 
 export default function App() {
-  return <Routes><Route path="links" element={<LinksPage />} /><Route element={<SiteLayout />}><Route index element={<HomePage />} /><Route path="music" element={<MusicPage />} /><Route path="videos" element={<VideosPage />} /><Route path="about" element={<AboutPage />} /><Route path="more-fire" element={<MoreFirePage />} /><Route path="booking" element={<BookingPage />} /><Route path="press" element={<PressPage />} /><Route path="*" element={<NotFound />} /></Route></Routes>;
+  return <Routes><Route path="links" element={<LinksPage />} /><Route element={<SiteLayout />}><Route index element={<HomePage />} /><Route path="music" element={<MusicPage />} /><Route path="watch" element={<WatchPage />} /><Route path="videos" element={<VideosPage />} /><Route path="about" element={<AboutPage />} /><Route path="more-fire" element={<MoreFirePage />} /><Route path="booking" element={<BookingPage />} /><Route path="press" element={<PressPage />} /><Route path="*" element={<NotFound />} /></Route></Routes>;
 }

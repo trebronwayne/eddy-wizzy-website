@@ -1,13 +1,6 @@
 // Generated from "Eddy Wizzy - Songs and YouTube Links" (captured October 2026).
-// Views are YouTube-rounded and go out of date: update `catalogMeta.asOf` and the numbers when you refresh them.
+// `views` is only used to order "Fan favourites"; view counts and subscriber numbers are not shown anywhere on the site.
 // Each song can have several versions: video (official video), audio, lyrics, or track (unlabelled upload).
-
-export const catalogMeta = {
-  asOf: 'October 2026',
-  subscribers: '30.6K',
-  channelVideos: 109,
-  listedViews: 7237100, // sum of views on the uploads listed here (a lower bound for the whole channel)
-};
 
 export const songs = [
  {

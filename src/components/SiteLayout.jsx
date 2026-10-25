@@ -73,6 +73,7 @@ function useRouteEffects(pathname) {
   }, [pathname]);
 
   useEffect(() => {
+    if (pathname === '/watch') return; // the player page sets its own title (the song name)
     document.title = pageTitles[pathname] || 'Page not found — Eddy Wizzy';
   }, [pathname]);
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, ChevronLeft, ChevronRight, Flame, Pause, Play, X, Expand } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Flame, Pause, Play, X, Expand } from 'lucide-react';
 import { siteContent as content } from '../data/siteContent';
 import { loadFirst } from '../lib/images';
 
@@ -132,36 +132,6 @@ export function Gallery({ tags, eyebrow, title, text, id }) {
       </div>
       {open !== null && shown[open] && <Lightbox items={shown} index={open} onClose={close} onMove={move} />}
     </section>
-  );
-}
-
-/* Full-screen YouTube player. The player loads only after a tap, so it never costs data until wanted. */
-export function PlayerModal({ video, onClose }) {
-  const closeRef = useRef(null);
-  useEffect(() => {
-    const opener = document.activeElement;
-    const onKey = (event) => { if (event.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    closeRef.current?.focus();
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; opener?.focus?.(); };
-  }, [onClose]);
-  return (
-    <div className="lightbox" role="dialog" aria-modal="true" aria-label={`Playing ${video.title}`} onClick={onClose}>
-      <button ref={closeRef} type="button" className="lightbox-btn lightbox-close" aria-label="Close player" onClick={onClose}><X size={20} /></button>
-      <div className="player-box" onClick={(event) => event.stopPropagation()}>
-        <div className="player-frame">
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`}
-            title={`${video.title} — Eddy Wizzy`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
-        </div>
-        <div className="player-meta"><b>{video.title}</b><a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noreferrer">Open on YouTube <ArrowUpRight size={15} /></a></div>
-      </div>
-    </div>
   );
 }
 

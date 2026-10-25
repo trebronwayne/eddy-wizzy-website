@@ -54,7 +54,8 @@ Soft UI (rounded surfaces, gentle raised/inset shadows) with a light and a dark 
 
 - `/` — Home / hero / releases / video / More Fire
 - `/music` — releases and platform links
-- `/videos` — embedded YouTube videos
+- `/videos` — newest video, fan favourites and live performances
+- `/watch?v=<youtube-id>` — the player page: big player, playlist with thumbnails, autoplay next, share link
 - `/about` — artist biography
 - `/more-fire` — More Fire Entertainment page
 - `/booking` — bookings and enquiries (includes an enquiry form that builds a ready-to-send message; nothing is stored)
@@ -74,8 +75,8 @@ More Fire copy and booking details.
 
 ### Songs, videos and audio previews
 
-- `src/data/catalog.js` holds every song with its YouTube links (official video, audio, lyrics). The Music page lists them all with search, filters (videos / audio / lyrics) and sorting; each song plays in a pop-up player or opens on YouTube. The Videos page shows the newest video, the most watched songs and live performances.
-- To add a new song, add an entry at the top of `songs` (copy an existing one) and, if it is a new release, add it to `releases` in `siteContent.js`. View counts are YouTube-rounded and the numbers on the home page (subscribers, views, songs) come from this file, so update `catalogMeta` whenever you refresh them.
+- `src/data/catalog.js` holds every song with its YouTube links (official video, audio, lyrics). The Music page lists them all with search, filters (videos / audio / lyrics) and sorting; every Play / Watch button opens the dedicated player page (`/watch`), where the song plays with the whole playlist beside it. There are no pop-ups. The Videos page shows the newest video, the most watched songs and live performances.
+- To add a new song, add an entry at the top of `songs` (copy an existing one) and, if it is a new release, add it to `releases` in `siteContent.js`. Subscriber and view numbers are deliberately not shown anywhere. The `views` value in the song list is only used to order "Fan favourites".
 - Cover images for every song and clip are in `public/covers/`, named by the YouTube video id (for example `4pMxVsvBmWU.webp`). For a new song, add `<video-id>.webp` (about 640×360); if the file is missing the site falls back to YouTube's own thumbnail.
 - Short audio previews: put 20–30 second MP3 files in `public/audio/` named `<song-id>-preview.mp3` (see `public/audio/README.txt` for names and an ffmpeg command). The waveform player appears by itself once a file exists.
 - Cut-out portraits (`eddy-cutout*.webp`) sit on a soft coloured disc. If a cut-out file is missing, the normal framed photo is used. The yellow-jacket cut-out is the roughest; a designer can refine it.
