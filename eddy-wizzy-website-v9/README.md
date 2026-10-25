@@ -78,7 +78,6 @@ More Fire copy and booking details.
 - `src/data/catalog.js` holds every song with its YouTube links (official video, audio, lyrics). The Music page lists them all with search, filters (videos / audio / lyrics) and sorting; every Play / Watch button opens the dedicated player page (`/watch`), where the song plays with the whole playlist beside it. There are no pop-ups. The Videos page shows the newest video, the most watched songs and live performances.
 - To add a new song, add an entry at the top of `songs` (copy an existing one) and, if it is a new release, add it to `releases` in `siteContent.js`. Subscriber and view numbers are deliberately not shown anywhere. The `views` value in the song list is only used to order "Fan favourites".
 - Cover images for every song and clip are in `public/covers/`, named by the YouTube video id (for example `4pMxVsvBmWU.webp`). For a new song, add `<video-id>.webp` (about 640×360); if the file is missing the site falls back to YouTube's own thumbnail.
-- Short audio previews: put 20–30 second MP3 files in `public/audio/` named `<song-id>-preview.mp3` (see `public/audio/README.txt` for names and an ffmpeg command). The waveform player appears by itself once a file exists.
 - Cut-out portraits (`eddy-cutout*.webp`) sit on a soft coloured disc. If a cut-out file is missing, the normal framed photo is used. The yellow-jacket cut-out is the roughest; a designer can refine it.
 
 ### Install as an app (PWA)
@@ -154,3 +153,8 @@ The copy and links below are starting points that must be confirmed by Eddy / Mo
 ## Stack
 
 React, Vite, React Router, Lucide icons and Simple Icons (brand logos). Custom CSS, no UI framework.
+
+
+### Release dates, "New" badges and "x ago" (automatic)
+
+Every song in `src/data/catalog.js` has a `date`. The site works out "New" (released in the last 90 days) and "2 months ago" / "3 years ago" from today's date, so nothing needs editing as time passes. Songs with `"exact": true` show their full date. For older songs the date is estimated from YouTube's "5y ago" label. When you add a song, put its real date at the top of the list with `"exact": true`. The home page's "Latest release" block always shows the three newest songs by date.

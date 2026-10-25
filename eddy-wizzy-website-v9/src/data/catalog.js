@@ -1,5 +1,6 @@
 // Generated from "Eddy Wizzy - Songs and YouTube Links" (captured October 2026).
 // `views` is only used to order "Fan favourites"; view counts and subscriber numbers are not shown anywhere on the site.
+// `date` is the release date. Songs marked "exact" have a known day; for the rest it is estimated from YouTube's "5y ago" style label, so the site shows "5 years ago" and keeps it correct as time passes.
 // Each song can have several versions: video (official video), audio, lyrics, or track (unlabelled upload).
 
 export const songs = [
@@ -17,7 +18,7 @@ export const songs = [
    }
   ],
   "views": 19000,
-  "label": "1mo ago"
+  "date": "2026-09-09",
  },
  {
   "id": "million-dollars",
@@ -33,8 +34,8 @@ export const songs = [
    }
   ],
   "views": 0,
-  "label": "Aug 22, 2026",
-  "released": "2026-08-22"
+  "date": "2026-08-22",
+  "exact": true,
  },
  {
   "id": "prayer",
@@ -50,8 +51,8 @@ export const songs = [
    }
   ],
   "views": 0,
-  "label": "Aug 20, 2026",
-  "released": "2026-08-20"
+  "date": "2026-08-20",
+  "exact": true,
  },
  {
   "id": "mood",
@@ -74,7 +75,7 @@ export const songs = [
    }
   ],
   "views": 44000,
-  "label": "2mo ago"
+  "date": "2026-08-09",
  },
  {
   "id": "my-love",
@@ -97,7 +98,7 @@ export const songs = [
    }
   ],
   "views": 153000,
-  "label": "5mo ago"
+  "date": "2026-05-10",
  },
  {
   "id": "itemo-kwe",
@@ -113,7 +114,7 @@ export const songs = [
    }
   ],
   "views": 109000,
-  "label": "1y ago"
+  "date": "2025-04-25",
  },
  {
   "id": "atye-agonya",
@@ -136,7 +137,7 @@ export const songs = [
    }
   ],
   "views": 251000,
-  "label": "1y ago"
+  "date": "2025-04-25",
  },
  {
   "id": "ket-mawangi",
@@ -152,7 +153,7 @@ export const songs = [
    }
   ],
   "views": 48000,
-  "label": "1y ago"
+  "date": "2025-04-25",
  },
  {
   "id": "awumu-awuma",
@@ -168,7 +169,7 @@ export const songs = [
    }
   ],
   "views": 94000,
-  "label": "1y ago"
+  "date": "2025-04-25",
  },
  {
   "id": "aye",
@@ -191,7 +192,7 @@ export const songs = [
    }
   ],
   "views": 343000,
-  "label": "1y ago"
+  "date": "2025-04-25",
  },
  {
   "id": "kec-iri-ce",
@@ -207,7 +208,7 @@ export const songs = [
    }
   ],
   "views": 126000,
-  "label": "1y ago"
+  "date": "2025-04-25",
  },
  {
   "id": "kulu",
@@ -223,7 +224,7 @@ export const songs = [
    }
   ],
   "views": 26000,
-  "label": "2y ago"
+  "date": "2024-04-24",
  },
  {
   "id": "for-you",
@@ -246,7 +247,7 @@ export const songs = [
    }
   ],
   "views": 388000,
-  "label": "2y ago"
+  "date": "2024-04-24",
  },
  {
   "id": "whats-your-problem",
@@ -262,7 +263,7 @@ export const songs = [
    }
   ],
   "views": 66000,
-  "label": "2y ago"
+  "date": "2024-04-24",
  },
  {
   "id": "imagine",
@@ -278,7 +279,7 @@ export const songs = [
    }
   ],
   "views": 129000,
-  "label": "2y ago"
+  "date": "2024-04-24",
  },
  {
   "id": "im-ok",
@@ -301,7 +302,7 @@ export const songs = [
    }
   ],
   "views": 447000,
-  "label": "2y ago"
+  "date": "2024-04-24",
  },
  {
   "id": "atye-steady",
@@ -324,7 +325,7 @@ export const songs = [
    }
   ],
   "views": 396000,
-  "label": "3y ago"
+  "date": "2023-04-25",
  },
  {
   "id": "ngat-matweri-pe",
@@ -340,7 +341,7 @@ export const songs = [
    }
   ],
   "views": 179000,
-  "label": "3y ago"
+  "date": "2023-04-25",
  },
  {
   "id": "mok-tami",
@@ -356,7 +357,7 @@ export const songs = [
    }
   ],
   "views": 56000,
-  "label": "3y ago"
+  "date": "2023-04-25",
  },
  {
   "id": "calo-in",
@@ -372,7 +373,7 @@ export const songs = [
    }
   ],
   "views": 99000,
-  "label": "3y ago"
+  "date": "2023-04-25",
  },
  {
   "id": "imara",
@@ -395,7 +396,7 @@ export const songs = [
    }
   ],
   "views": 507000,
-  "label": "3y ago"
+  "date": "2023-04-25",
  },
  {
   "id": "latin-lacoo",
@@ -418,7 +419,7 @@ export const songs = [
    }
   ],
   "views": 47000,
-  "label": "4y ago"
+  "date": "2022-04-25",
  },
  {
   "id": "oromo",
@@ -434,7 +435,7 @@ export const songs = [
    }
   ],
   "views": 428000,
-  "label": "4y ago"
+  "date": "2022-04-25",
  },
  {
   "id": "nga-ma-pengeyo",
@@ -450,7 +451,7 @@ export const songs = [
    }
   ],
   "views": 172000,
-  "label": "4y ago"
+  "date": "2022-04-25",
  },
  {
   "id": "aling-mot",
@@ -466,7 +467,7 @@ export const songs = [
    }
   ],
   "views": 36000,
-  "label": "4y ago"
+  "date": "2022-04-25",
  },
  {
   "id": "tap-tap",
@@ -489,7 +490,7 @@ export const songs = [
    }
   ],
   "views": 277000,
-  "label": "4y ago"
+  "date": "2022-04-25",
  },
  {
   "id": "friday-night",
@@ -505,7 +506,7 @@ export const songs = [
    }
   ],
   "views": 8700,
-  "label": "4y ago"
+  "date": "2022-04-25",
  },
  {
   "id": "in-keni",
@@ -521,7 +522,7 @@ export const songs = [
    }
   ],
   "views": 186000,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "rip-paul-lokech",
@@ -537,7 +538,7 @@ export const songs = [
    }
   ],
   "views": 6100,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "lunyodo",
@@ -553,7 +554,7 @@ export const songs = [
    }
   ],
   "views": 24000,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "torrero",
@@ -569,7 +570,7 @@ export const songs = [
    }
   ],
   "views": 13000,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "dis-dat",
@@ -585,7 +586,7 @@ export const songs = [
    }
   ],
   "views": 5300,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "kati",
@@ -601,7 +602,7 @@ export const songs = [
    }
   ],
   "views": 13000,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "zim-zim",
@@ -617,7 +618,7 @@ export const songs = [
    }
   ],
   "views": 292000,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "kwiji-kwiji",
@@ -640,7 +641,7 @@ export const songs = [
    }
   ],
   "views": 297000,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "konye-pe",
@@ -663,7 +664,7 @@ export const songs = [
    }
   ],
   "views": 206000,
-  "label": "5y ago"
+  "date": "2021-04-25",
  },
  {
   "id": "abedo-tye",
@@ -679,7 +680,7 @@ export const songs = [
    }
   ],
   "views": 36000,
-  "label": "6y ago"
+  "date": "2020-04-24",
  },
  {
   "id": "gini",
@@ -695,7 +696,7 @@ export const songs = [
    }
   ],
   "views": 3900,
-  "label": "6y ago"
+  "date": "2020-04-24",
  },
  {
   "id": "corona",
@@ -718,7 +719,7 @@ export const songs = [
    }
   ],
   "views": 36000,
-  "label": "6y ago"
+  "date": "2020-04-24",
  },
  {
   "id": "dii-cwinyi",
@@ -734,7 +735,7 @@ export const songs = [
    }
   ],
   "views": 3700,
-  "label": "6y ago"
+  "date": "2020-04-24",
  },
  {
   "id": "bong-jeba",
@@ -750,7 +751,7 @@ export const songs = [
    }
   ],
   "views": 3800,
-  "label": "6y ago"
+  "date": "2020-04-24",
  },
  {
   "id": "apoya",
@@ -773,7 +774,7 @@ export const songs = [
    }
   ],
   "views": 37400,
-  "label": "6y ago"
+  "date": "2020-04-24",
  },
  {
   "id": "wan-ariyo",
@@ -796,7 +797,7 @@ export const songs = [
    }
   ],
   "views": 98400,
-  "label": "7y ago"
+  "date": "2019-04-25",
  },
  {
   "id": "action",
@@ -812,7 +813,7 @@ export const songs = [
    }
   ],
   "views": 8900,
-  "label": "7y ago"
+  "date": "2019-04-25",
  },
  {
   "id": "am-sorry",
@@ -828,7 +829,7 @@ export const songs = [
    }
   ],
   "views": 7400,
-  "label": "7y ago"
+  "date": "2019-04-25",
  },
  {
   "id": "anga-obed-mujony",
@@ -844,7 +845,7 @@ export const songs = [
    }
   ],
   "views": 203000,
-  "label": "8y ago"
+  "date": "2018-04-25",
  },
  {
   "id": "mar-ni",
@@ -860,7 +861,7 @@ export const songs = [
    }
   ],
   "views": 81000,
-  "label": "8y ago"
+  "date": "2018-04-25",
  },
  {
   "id": "rip-mozey-radio",
@@ -876,7 +877,7 @@ export const songs = [
    }
   ],
   "views": 6600,
-  "label": "8y ago"
+  "date": "2018-04-25",
  },
  {
   "id": "weng-nono",
@@ -892,7 +893,7 @@ export const songs = [
    }
   ],
   "views": 225000,
-  "label": "8y ago"
+  "date": "2018-04-25",
  },
  {
   "id": "nyom-pa-bobby-ofa",
@@ -908,7 +909,7 @@ export const songs = [
    }
   ],
   "views": 2100,
-  "label": "8y ago"
+  "date": "2018-04-25",
  },
  {
   "id": "kaka-na",
@@ -924,7 +925,7 @@ export const songs = [
    }
   ],
   "views": 9100,
-  "label": "9y ago"
+  "date": "2017-04-25",
  },
  {
   "id": "med-mac",
@@ -940,7 +941,7 @@ export const songs = [
    }
   ],
   "views": 6000,
-  "label": "9y ago"
+  "date": "2017-04-25",
  },
  {
   "id": "mot-mot",
@@ -956,7 +957,7 @@ export const songs = [
    }
   ],
   "views": 41000,
-  "label": "9y ago"
+  "date": "2017-04-25",
  },
  {
   "id": "gang-ber",
@@ -972,7 +973,7 @@ export const songs = [
    }
   ],
   "views": 584000,
-  "label": "10y ago"
+  "date": "2016-04-24",
  },
  {
   "id": "caden",
@@ -988,7 +989,7 @@ export const songs = [
    }
   ],
   "views": 207000,
-  "label": "10y ago"
+  "date": "2016-04-24",
  },
  {
   "id": "aloka-loka-pe",
@@ -1004,7 +1005,7 @@ export const songs = [
    }
   ],
   "views": 19000,
-  "label": "10y ago"
+  "date": "2016-04-24",
  },
  {
   "id": "size",
@@ -1020,7 +1021,7 @@ export const songs = [
    }
   ],
   "views": 63000,
-  "label": "11y ago"
+  "date": "2015-04-25",
  },
  {
   "id": "nyut-mar-ki-dako",
@@ -1036,7 +1037,7 @@ export const songs = [
    }
   ],
   "views": 21000,
-  "label": "11y ago"
+  "date": "2015-04-25",
  }
 ];
 

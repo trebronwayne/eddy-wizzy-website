@@ -61,14 +61,11 @@ export const siteContent = {
     { label: 'SoundCloud', href: 'https://soundcloud.com/eddy-wizzy-music', short: 'SC' },
     { label: 'Apple Music', href: 'https://music.apple.com/us/artist/eddy-wizzy/1624713344', short: 'AM' },
   ],
-  // Latest releases come from src/data/catalog.js (the full song list). Order: newest first.
-  releases: [
-    { ...fromCatalog('pyem-tye'), kind: 'New release', cover: asset('images/pyem-tye-cover.webp'), credit: 'Prod. Brozy Beats / Artin Pro' },
-    { ...fromCatalog('million-dollars'), kind: 'New release', released: 'Aug 22, 2026' },
-    { ...fromCatalog('prayer'), kind: 'New release', released: 'Aug 20, 2026' },
-  ],
-  // Songs that have a short audio preview file at public/audio/<song-id>-preview.mp3 (see README).
-  previewIds: ['pyem-tye', 'million-dollars', 'prayer', 'my-love', 'mood', 'for-you', 'imara'],
+  // Latest releases are the three newest songs in src/data/catalog.js (by date), so this list updates itself.
+  releases: [...songs].sort((x, y) => y.date.localeCompare(x.date)).slice(0, 3).map((song, i) => ({
+    ...fromCatalog(song.id), kind: 'New release', date: song.date, exact: song.exact,
+    ...(i === 0 && song.id === 'pyem-tye' ? { cover: asset('images/pyem-tye-cover.webp'), credit: 'Prod. Brozy Beats / Artin Pro' } : {}),
+  })),
   videos: [
     { title: 'Pyem Tye', subtitle: 'Official dance video', youtubeId: '4pMxVsvBmWU', href: 'https://www.youtube.com/watch?v=4pMxVsvBmWU' },
   ],

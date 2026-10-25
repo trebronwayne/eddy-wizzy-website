@@ -6,9 +6,9 @@ import {
 } from 'lucide-react';
 import SiteLayout, { SocialLinks, BrandIcon } from './components/SiteLayout';
 import { siteContent as content } from './data/siteContent';
-import { RotatingWord, Marquee, Equalizer, Countdown, Gallery, useAvailableImages } from './components/Dynamic';
+import { Countdown, Gallery, useAvailableImages } from './components/Dynamic';
 import ThemeToggle from './components/ThemeToggle';
-import { Catalog, Collaborations, LatestRelease, LivePerformances, MostWatched, StatsStrip } from './components/Catalog';
+import { Catalog, LatestRelease, LivePerformances, MostWatched } from './components/Catalog';
 import { songs as catalogSongs } from './data/catalog';
 import { watchPath } from './lib/tracks';
 import WatchPage from './components/Watch';
@@ -183,58 +183,41 @@ function EnquiryForm() {
 const heroCutoutItems = [{ src: content.images.heroCutout }];
 
 function HomePage() {
-  const featuredVideo = content.videos[0];
   const cutoutList = useAvailableImages(heroCutoutItems);
   const cutout = cutoutList && cutoutList[0];
-  const topTitles = [...catalogSongs].sort((a, b) => b.views - a.views).slice(0, 6).map((song) => song.title);
-  const marqueeItems = [...new Set([...content.genres, content.moreFire.name, ...topTitles, 'Uganda'])];
   return (
     <>
       <section className="hero wrap">
         <div className="hero-copy">
           <div className="status-line"><span className="status-dot" />{content.heroEyebrow}</div>
-          <h1>{content.artistName.split(' ')[0]}<br /><span>WIZZY</span><i>.</i></h1>
+          <h1>{content.artistName}</h1>
           <p className="hero-tagline">{content.heroText}</p>
-          <p className="hero-rotator"><span>THE SOUND OF</span><RotatingWord words={content.genres} /></p>
+          <p className="hero-genres">{content.genres.join(' · ')}</p>
           <div className="hero-actions"><Link to="/music" className="button button--accent">Explore the music <ArrowUpRight size={17} /></Link><Link to="/about" className="button button--outline">Meet the artist</Link></div>
           <div className="hero-bottom-note"><span className="location-pin"><Globe2 size={14} /></span>{content.locationLine}</div>
         </div>
         <div className={`hero-visual ${cutout ? 'hero-visual--cutout' : ''}`}>
           <div className="hero-glow" aria-hidden="true" />
-          <div className="hero-orbit hero-orbit--one" /><div className="hero-orbit hero-orbit--two" />
           {cutout
             ? <img className="hero-cutout" src={cutout.src} alt={`${content.artistName} portrait`} fetchPriority="high" decoding="async" />
             : <Photo src={content.images.hero} alt={`${content.artistName} portrait`} className="hero-photo" fallback="EW" />}
-          <div className="hero-vertical-label">MORE FIRE ENTERTAINMENT · UGANDA</div>
-          {!cutout && <div className="hero-stamp"><span>THE</span><b>EW</b><span>EXPERIENCE</span></div>}
-          <Link className="hero-now" to={watchPath(content.releases[0].youtubeId)}><span className="hero-now-play"><Play size={15} fill="currentColor" /></span><span><small>LATEST RELEASE</small><b>{content.releases[0].title}</b></span><Equalizer /></Link>
-          <div className="hero-caption"><span className="caption-line" />{content.artistTagline}</div>
+          <Link className="hero-now" to={watchPath(content.releases[0].youtubeId)}><span className="hero-now-play"><Play size={15} fill="currentColor" /></span><span><small>LATEST RELEASE</small><b>{content.releases[0].title}</b></span></Link>
         </div>
-        <div className="hero-side-index">01 <span>/</span> 04</div>
       </section>
-
-      <section className="quick-facts wrap" aria-label="Artist quick facts">
-        <div className="quick-fact"><span className="fact-icon"><Mic2 size={19} /></span><div><b>Recording artist</b><small>Artist · Performer</small></div></div>
-        <div className="quick-fact"><span className="fact-icon"><Headphones size={19} /></span><div><b>Sound in motion</b><small>Afrobeat · Dancehall · Reggae</small></div></div>
-        <div className="quick-fact"><span className="fact-icon"><Flame size={19} /></span><div><b>More Fire</b><small>Entertainment</small></div></div>
-      </section>
-
-      <Marquee items={marqueeItems} />
-
-      <StatsStrip />
 
       <LatestRelease />
 
-      <section className="video-band"><div className="wrap video-band-inner"><div className="video-band-copy"><p className="eyebrow"><span className="eyebrow-mark" /> WATCH · LISTEN · REPEAT</p><h2>See the sound<br /><em>come alive.</em></h2><p>Official videos, visual stories and moments from the music.</p><Link className="button button--outline" to="/videos">Explore videos <ArrowUpRight size={17} /></Link></div><div className="video-band-content">{featuredVideo && <VideoFeature video={featuredVideo} />}</div></div></section>
-
-      <section className="about-preview wrap">
-        <div className="about-preview-image"><CutoutPortrait cutout={content.images.aboutCutout} photo={content.images.about} alt={`${content.artistName} artist portrait`} tint="green" className="about-photo" /><div className="image-number">01 / ARTIST</div></div>
-        <div className="about-preview-copy"><p className="eyebrow">BEHIND THE MUSIC</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><Link to="/about" className="text-link">More about Eddy <ArrowUpRight size={16} /></Link><div className="about-signature">{content.artistName}<span>ARTIST · PERFORMER</span></div></div>
+      <section className="section-block wrap" id="favourites">
+        <SectionHeading eyebrow="FAN FAVOURITES" title="The ones everyone plays." action="All videos" to="/videos" />
+        <MostWatched count={4} />
       </section>
 
-      <Gallery eyebrow="MOMENTS" title="In the moment." text="Live shows, the crew and the work behind the sound." id="gallery" />
+      <section className="about-preview wrap">
+        <div className="about-preview-image"><CutoutPortrait cutout={content.images.aboutCutout} photo={content.images.about} alt={`${content.artistName} artist portrait`} tint="green" className="about-photo" /></div>
+        <div className="about-preview-copy"><p className="eyebrow">BEHIND THE MUSIC</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><Link to="/about" className="text-link">More about Eddy <ArrowUpRight size={16} /></Link></div>
+      </section>
 
-      <section className="more-fire-teaser"><div className="wrap more-fire-inner"><div className="fire-mark"><Flame size={54} strokeWidth={1.1} /></div><div className="more-fire-copy"><p className="eyebrow">THE CREATIVE HOME</p><h2>More Fire<br /><span>Entertainment.</span></h2><p>Meet the label and creative platform connected to Eddy Wizzy.</p><Link to="/more-fire" className="button button--accent">Explore More Fire <ArrowUpRight size={17} /></Link></div><div className="fire-watermark">MF<span>.</span></div></div></section>
+      <section className="more-fire-teaser"><div className="wrap more-fire-inner"><div className="fire-mark"><Flame size={54} strokeWidth={1.1} /></div><div className="more-fire-copy"><p className="eyebrow">THE CREATIVE HOME</p><h2>More Fire<br /><span>Entertainment.</span></h2><p>Meet the label and creative platform connected to Eddy Wizzy.</p><Link to="/more-fire" className="button button--accent">Explore More Fire <ArrowUpRight size={17} /></Link></div></div></section>
       <Shows />
       <BookingStrip />
     </>
@@ -242,16 +225,14 @@ function HomePage() {
 }
 
 function MusicPage() {
-  return <PageShell eyebrow="LISTEN" title={<>The music.<br /><span>Always moving.</span></>} intro="Every song, with its video, audio and lyrics versions. Press play right here, or open it on YouTube." number="01">
-    <div className="music-note"><Disc3 size={22} /><span>{catalogSongs.length} SONGS · VIDEOS · AUDIO · LYRICS</span></div>
+  return <PageShell eyebrow="LISTEN" title={<>The music.</>} intro="Every song in one place. Pick one and it plays on its own page, with the full playlist beside it." number="01">
     <Catalog />
-    <Collaborations />
     <div className="platform-panel"><div><p className="eyebrow">YOUR NEXT LISTEN</p><h2>Find Eddy on your platform.</h2></div><div className="listen-grid">{content.socialLinks.map((link) => <a key={link.label} className="listen-card" href={link.href} target="_blank" rel="noreferrer"><span className="listen-icon"><BrandIcon name={link.label} size={20} /></span><div><b>{link.label}</b><small>Open on {link.label}</small></div><ArrowUpRight size={16} aria-hidden="true" /></a>)}</div></div>
   </PageShell>;
 }
 
 function VideosPage() {
-  return <PageShell eyebrow="WATCH" title={<>Visuals that<br /><span>carry the feeling.</span></>} intro="The newest video, the most watched songs and live performances from Uganda, South Sudan and London." number="02">
+  return <PageShell eyebrow="WATCH" title={<>Watch.</>} intro="The newest video, the most watched songs and live performances from Uganda, South Sudan and London." number="02">
     <div className="videos-list">{content.videos.map((video) => <VideoFeature key={video.youtubeId} video={video} large />)}</div>
     <div className="video-section"><p className="eyebrow">FAN FAVOURITES</p><h2>The ones everyone plays.</h2><MostWatched /></div>
     <div className="video-section"><p className="eyebrow">ON STAGE</p><h2>Live performances.</h2><LivePerformances /></div>
@@ -274,6 +255,7 @@ function AboutPage() {
       ['Latest release', content.releases[0].title],
       ['Songs', `${Math.floor(catalogSongs.length / 5) * 5}+ released`],
     ].map(([label, value]) => <div className="glance-card" key={label}><small>{label}</small><b>{value}</b></div>)}</div>
+    <Gallery eyebrow="MOMENTS" title="In the moment." text="Live shows, the crew and the work behind the sound." id="gallery" />
     {content.milestones.length > 0 && <div className="timeline-wrap"><p className="eyebrow">THE JOURNEY</p><ol className="timeline">{content.milestones.map((item) => <li key={`${item.year}-${item.title}`}><span>{item.year}</span><div><h3>{item.title}</h3>{item.text && <p>{item.text}</p>}</div></li>)}</ol></div>}
   </PageShell>;
 }
@@ -281,7 +263,7 @@ function AboutPage() {
 function MoreFirePage() {
   const fire = content.moreFire;
   return <div className="more-fire-page">
-    <section className="fire-hero wrap"><div className="fire-hero-copy"><p className="eyebrow"><Flame size={14} /> {fire.eyebrow}</p><h1>MORE FIRE<br /><span>ENTERTAINMENT</span><i>.</i></h1><p className="fire-tagline"><span className="sr-only">{fire.headline}</span><span aria-hidden="true">More <RotatingWord words={fire.rotatingWords} /></span></p><p className="fire-intro">{fire.intro}</p><a href="#focus" className="button button--accent">Explore the vision <ArrowDownRight size={17} /></a></div><div className="fire-hero-art"><CutoutPortrait cutout={content.images.fireCutout} photo={content.images.moreFire} alt="Eddy Wizzy for More Fire Entertainment" tint="yellow" className="fire-photo" fallback="MF" /><div className="fire-art-stamp"><Flame size={22} /><span>MORE<br />FIRE</span></div><div className="fire-art-caption">MUSIC / PEOPLE / CULTURE</div></div></section>
+    <section className="fire-hero wrap"><div className="fire-hero-copy"><p className="eyebrow"><Flame size={14} /> {fire.eyebrow}</p><h1>MORE FIRE<br /><span>ENTERTAINMENT</span><i>.</i></h1><p className="fire-tagline">{fire.headline}</p><p className="fire-intro">{fire.intro}</p><a href="#focus" className="button button--accent">Explore the vision <ArrowDownRight size={17} /></a></div><div className="fire-hero-art"><CutoutPortrait cutout={content.images.fireCutout} photo={content.images.moreFire} alt="Eddy Wizzy for More Fire Entertainment" tint="yellow" className="fire-photo" fallback="MF" /><div className="fire-art-stamp"><Flame size={22} /><span>MORE<br />FIRE</span></div><div className="fire-art-caption">MUSIC / PEOPLE / CULTURE</div></div></section>
     <section className="fire-manifesto"><div className="wrap manifesto-inner"><span className="manifesto-number">MF—01</span><h2>A home for<br /><em>what comes next.</em></h2><div><p>{fire.manifesto}</p></div></div></section>
     <section className="section-block wrap" id="focus"><SectionHeading eyebrow="WHAT WE STAND FOR" title="Built around the creative." text="The ideas that shape the music, the people and the projects." /><div className="focus-grid">{fire.focusAreas.map((item) => <article className="focus-card" key={item.number}><span>{item.number}</span><ArrowUpRight className="focus-arrow" size={18} /><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></section>
     <Gallery tags={['More Fire']} eyebrow="THE CREATIVE HOME" title="Inside More Fire." text="Moments from the people and sessions behind the sound." id="more-fire-gallery" />
