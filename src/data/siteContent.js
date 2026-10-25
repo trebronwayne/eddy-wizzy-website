@@ -7,6 +7,14 @@
 // Builds a URL for a file in /public that works on any host path (local, GitHub Pages project site, custom domain).
 const asset = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
 
+import { songs } from './catalog';
+
+function fromCatalog(id) {
+  const song = songs.find((item) => item.id === id);
+  const version = song.versions[0];
+  return { id, title: song.title, year: '', href: `https://www.youtube.com/watch?v=${version.id}`, youtubeId: version.id, cover: '' };
+}
+
 export const siteContent = {
   artistName: 'Eddy Wizzy',
   artistTagline: 'Sound without borders.',
@@ -17,6 +25,8 @@ export const siteContent = {
   images: {
     hero: asset('images/eddy-hero.webp'),
     heroCutout: asset('images/eddy-cutout.webp'),
+    aboutCutout: asset('images/eddy-cutout-white.webp'),
+    fireCutout: asset('images/eddy-cutout-yellow.webp'),
     about: asset('images/eddy-about.webp'),
     moreFire: asset('images/more-fire.webp'),
     myLoveCover: asset('images/my-love-cover.webp'),
@@ -51,15 +61,16 @@ export const siteContent = {
     { label: 'SoundCloud', href: 'https://soundcloud.com/eddy-wizzy-music', short: 'SC' },
     { label: 'Apple Music', href: 'https://music.apple.com/us/artist/eddy-wizzy/1624713344', short: 'AM' },
   ],
+  // Latest releases come from src/data/catalog.js (the full song list). Order: newest first.
   releases: [
-    { title: 'My Love', year: '2026', kind: 'Single', href: 'https://youtu.be/MO2nyK7BgJ4', cover: asset('images/my-love-cover.webp'), featured: true },
-    { title: 'Pyem Tye', year: '', kind: 'Release', href: 'https://www.youtube.com/@eddywizzymusic', cover: asset('images/pyem-tye-cover.webp'), featured: false },
-    { title: 'For You', year: '', kind: 'Single', href: 'https://www.youtube.com/results?search_query=Eddy+Wizzy+For+You', cover: '', featured: false },
-    { title: 'Subaru', year: '', kind: 'Single', href: 'https://www.youtube.com/results?search_query=Eddy+Wizzy+Subaru', cover: '', featured: false },
-    { title: 'Mood', year: '2026', kind: 'Single', href: 'https://music.apple.com/us/artist/eddy-wizzy/1624713344', cover: '', featured: false },
+    { ...fromCatalog('pyem-tye'), kind: 'New release', cover: asset('images/pyem-tye-cover.webp'), credit: 'Prod. Brozy Beats / Artin Pro' },
+    { ...fromCatalog('million-dollars'), kind: 'New release', released: 'Aug 22, 2026' },
+    { ...fromCatalog('prayer'), kind: 'New release', released: 'Aug 20, 2026' },
   ],
+  // Songs that have a short audio preview file at public/audio/<song-id>-preview.mp3 (see README).
+  previewIds: ['pyem-tye', 'million-dollars', 'prayer', 'my-love', 'mood', 'for-you', 'imara'],
   videos: [
-    { title: 'My Love', subtitle: 'Official video / YouTube', youtubeId: 'MO2nyK7BgJ4', href: 'https://youtu.be/MO2nyK7BgJ4' },
+    { title: 'Pyem Tye', subtitle: 'Official dance video', youtubeId: '4pMxVsvBmWU', href: 'https://www.youtube.com/watch?v=4pMxVsvBmWU' },
   ],
   moreFire: {
     name: 'More Fire Entertainment',

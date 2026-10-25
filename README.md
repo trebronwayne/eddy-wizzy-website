@@ -72,6 +72,24 @@ More Fire copy and booking details.
 - Shows: the next upcoming show gets a live countdown. Shows move to "Past shows" automatically once their date passes. Add an optional `time: '19:30'` to a show for an exact countdown.
 - Gallery with Shows / More Fire filters and a full-screen viewer (arrow keys and Esc work). It stays hidden until photos exist.
 
+### Songs, videos and audio previews
+
+- `src/data/catalog.js` holds every song with its YouTube links (official video, audio, lyrics). The Music page lists them all with search, filters (videos / audio / lyrics) and sorting; each song plays in a pop-up player or opens on YouTube. The Videos page shows the newest video, the most watched songs and live performances.
+- To add a new song, add an entry at the top of `songs` (copy an existing one) and, if it is a new release, add it to `releases` in `siteContent.js`. View counts are YouTube-rounded and the numbers on the home page (subscribers, views, songs) come from this file, so update `catalogMeta` whenever you refresh them.
+- Cover images for every song and clip are in `public/covers/`, named by the YouTube video id (for example `4pMxVsvBmWU.webp`). For a new song, add `<video-id>.webp` (about 640×360); if the file is missing the site falls back to YouTube's own thumbnail.
+- Short audio previews: put 20–30 second MP3 files in `public/audio/` named `<song-id>-preview.mp3` (see `public/audio/README.txt` for names and an ffmpeg command). The waveform player appears by itself once a file exists.
+- Cut-out portraits (`eddy-cutout*.webp`) sit on a soft coloured disc. If a cut-out file is missing, the normal framed photo is used. The yellow-jacket cut-out is the roughest; a designer can refine it.
+
+### Install as an app (PWA)
+
+The site can be installed on a phone or computer and opens full-screen like an app, with its own icon.
+
+- Android and desktop Chrome/Edge: an **Install app** button appears in the footer (and the browser's own install option works too).
+- iPhone: Safari shows **Add to Home Screen** instructions in the footer.
+- After one visit, the pages and photos you saw are saved, so the site still opens without a signal. Videos and links to other sites need internet.
+- Icons and name live in `public/manifest.webmanifest` and `public/icons/`. The saved files are managed by `public/sw.js`; when you publish big changes, change `VERSION` at the top of that file so visitors refresh their saved copy.
+- It only becomes installable on the real https address (GitHub Pages is fine). `npm run dev` does not register the service worker; test with `npm run build && npm run preview`.
+
 ### Extra pages
 
 - `/press` — press kit: short bio (copy button), quick facts, downloadable photos and the booking contact. Photos listed there appear automatically when the files exist.

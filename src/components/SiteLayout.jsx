@@ -1,10 +1,11 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ArrowUp, ArrowUpRight, Menu, X } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Download, Menu, X } from 'lucide-react';
 import { siX, siYoutube, siSoundcloud, siApplemusic, siInstagram, siTiktok, siFacebook, siWhatsapp } from 'simple-icons';
 import { siteContent } from '../data/siteContent';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '../theme';
+import { usePwaInstall } from '../pwa';
 
 const navItems = [
   { to: '/', label: 'Home' },
@@ -180,6 +181,8 @@ function Header({ scrolled, hidden }) {
 
 function Footer() {
   const { followsSystem, matchSystem } = useTheme();
+  const { state: installState, install } = usePwaInstall();
+  const [iosHint, setIosHint] = useState(false);
   return (
     <footer className="site-footer">
       <div className="wrap footer-main">
@@ -197,7 +200,11 @@ function Footer() {
         </div>
         <SocialLinks compact />
       </div>
-      <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} Eddy Wizzy. All rights reserved.</span><span className="footer-meta"><button type="button" className="footer-link" onClick={matchSystem} disabled={followsSystem}>{followsSystem ? 'Theme: matches your device' : 'Match my device theme'}</button></span></div>
+      <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} Eddy Wizzy. All rights reserved.</span><span className="footer-meta"><button type="button" className="footer-link" onClick={matchSystem} disabled={followsSystem}>{followsSystem ? 'Theme: matches your device' : 'Match my device theme'}</button>
+          {installState === 'prompt' && <button type="button" className="install-btn" onClick={install}><Download size={14} aria-hidden="true" /> Install app</button>}
+          {installState === 'ios' && <button type="button" className="install-btn" aria-expanded={iosHint} onClick={() => setIosHint((value) => !value)}><Download size={14} aria-hidden="true" /> Add to Home Screen</button>}
+          {installState === 'ios' && iosHint && <span className="install-hint" role="status">In Safari, tap the Share button, then “Add to Home Screen”.</span>}
+        </span></div>
     </footer>
   );
 }

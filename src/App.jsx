@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import {
   ArrowDownRight, ArrowRight, ArrowUpRight, Play, Disc3, Headphones,
@@ -8,6 +8,8 @@ import SiteLayout, { SocialLinks, BrandIcon } from './components/SiteLayout';
 import { siteContent as content } from './data/siteContent';
 import { RotatingWord, Marquee, Equalizer, Countdown, Gallery, useAvailableImages } from './components/Dynamic';
 import ThemeToggle from './components/ThemeToggle';
+import { Catalog, Collaborations, LatestRelease, LivePerformances, MostWatched, StatsStrip } from './components/Catalog';
+import { catalogMeta, songs as catalogSongs } from './data/catalog';
 import { useImageSrc } from './lib/images';
 
 function Photo({ src, alt, className = '', fallback = 'EW' }) {
@@ -21,24 +23,22 @@ function Photo({ src, alt, className = '', fallback = 'EW' }) {
   );
 }
 
-function SectionHeading({ eyebrow, title, text, action, to }) {
-  return <div className="section-heading"><div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2>{text && <p className="section-intro">{text}</p>}</div>{action && <Link className="text-link" to={to}>{action}<ArrowUpRight size={16} /></Link>}</div>;
+/* Cut-out portrait on a soft tinted disc. Falls back to the framed photo if the cut-out file is missing. */
+function CutoutPortrait({ cutout, photo, alt, tint = 'red', className = '', fallback = 'EW' }) {
+  const items = useMemo(() => [{ src: cutout }], [cutout]);
+  const found = useAvailableImages(items);
+  if (found === null) return <div className={`cutout-stage ${className}`} aria-hidden="true" />;
+  if (found.length === 0) return <Photo src={photo} alt={alt} className={className} fallback={fallback} />;
+  return (
+    <div className={`cutout-stage cutout-stage--${tint} ${className}`}>
+      <div className="cutout-disc" aria-hidden="true" />
+      <img className="cutout-img" src={found[0].src} alt={alt} loading="lazy" decoding="async" />
+    </div>
+  );
 }
 
-function ReleaseCard({ release, index }) {
-  const [cover, onCoverError] = useImageSrc(release.cover);
-  const coverOk = Boolean(cover);
-  return (
-    <a href={release.href} className={`release-card ${index === 0 ? 'release-card--featured' : ''}`} target="_blank" rel="noreferrer">
-      <div className={`release-art release-art--${index % 4} ${coverOk ? 'release-art--cover' : ''}`}>
-        {coverOk ? <img src={cover} alt={`${release.title} cover`} loading="lazy" decoding="async" onError={onCoverError} /> : null}
-        {!coverOk && <div className="release-art-type"><span>{release.title}</span><small>{release.kind}</small></div>}
-        <span className="release-art-index">0{index + 1}</span>
-        <span className="release-play"><Play size={17} fill="currentColor" /></span>
-      </div>
-      <div className="release-meta"><div><h3>{release.title}</h3><span>{release.kind}</span></div>{release.year && <span className="release-year">{release.year}</span>}</div>
-    </a>
-  );
+function SectionHeading({ eyebrow, title, text, action, to }) {
+  return <div className="section-heading"><div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2>{text && <p className="section-intro">{text}</p>}</div>{action && <Link className="text-link" to={to}>{action}<ArrowUpRight size={16} /></Link>}</div>;
 }
 
 function VideoFeature({ video, large = false }) {
@@ -56,7 +56,7 @@ function VideoFeature({ video, large = false }) {
           />
         ) : (
           <button type="button" className="video-facade" onClick={() => setPlaying(true)} aria-label={`Play ${video.title}`}>
-            <img src={`https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" />
+            <img src={`${import.meta.env.BASE_URL}covers/${video.youtubeId}.webp`} alt="" loading="lazy" decoding="async" onError={(event) => { const img = event.currentTarget; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`; } }} />
             <span className="video-facade-play"><Play size={26} fill="currentColor" /></span>
             <span className="video-facade-note">Tap to play · loads only when you press play</span>
           </button>
@@ -195,7 +195,8 @@ function HomePage() {
   const featuredVideo = content.videos[0];
   const cutoutList = useAvailableImages(heroCutoutItems);
   const cutout = cutoutList && cutoutList[0];
-  const marqueeItems = [...new Set([...content.genres, content.moreFire.name, ...content.releases.map((release) => release.title), 'Uganda'])];
+  const topTitles = [...catalogSongs].sort((a, b) => b.views - a.views).slice(0, 6).map((song) => song.title);
+  const marqueeItems = [...new Set([...content.genres, content.moreFire.name, ...topTitles, 'Uganda'])];
   return (
     <>
       <section className="hero wrap">
@@ -229,15 +230,14 @@ function HomePage() {
 
       <Marquee items={marqueeItems} />
 
-      <section className="section-block wrap" id="music">
-        <SectionHeading eyebrow="THE SOUND" title="On repeat." text="Explore selected releases and discover the sound behind the name." action="All music" to="/music" />
-        <div className="release-grid">{content.releases.slice(0, 3).map((release, index) => <ReleaseCard key={release.title} release={release} index={index} />)}</div>
-      </section>
+      <StatsStrip />
+
+      <LatestRelease />
 
       <section className="video-band"><div className="wrap video-band-inner"><div className="video-band-copy"><p className="eyebrow"><span className="eyebrow-mark" /> WATCH · LISTEN · REPEAT</p><h2>See the sound<br /><em>come alive.</em></h2><p>Official videos, visual stories and moments from the music.</p><Link className="button button--outline" to="/videos">Explore videos <ArrowUpRight size={17} /></Link></div><div className="video-band-content">{featuredVideo && <VideoFeature video={featuredVideo} />}</div></div></section>
 
       <section className="about-preview wrap">
-        <div className="about-preview-image"><Photo src={content.images.about} alt={`${content.artistName} artist portrait`} className="about-photo" fallback="EW" /><div className="image-number">01 / ARTIST</div></div>
+        <div className="about-preview-image"><CutoutPortrait cutout={content.images.aboutCutout} photo={content.images.about} alt={`${content.artistName} artist portrait`} tint="green" className="about-photo" /><div className="image-number">01 / ARTIST</div></div>
         <div className="about-preview-copy"><p className="eyebrow">BEHIND THE MUSIC</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><Link to="/about" className="text-link">More about Eddy <ArrowUpRight size={16} /></Link><div className="about-signature">{content.artistName}<span>ARTIST · PERFORMER</span></div></div>
       </section>
 
@@ -251,29 +251,37 @@ function HomePage() {
 }
 
 function MusicPage() {
-  return <PageShell eyebrow="LISTEN" title={<>The music.<br /><span>Always moving.</span></>} intro="Explore releases and jump to the platform where you listen." number="01">
-    <div className="music-note"><Disc3 size={22} /><span>RELEASES · SINGLES · COLLABORATIONS</span></div>
-    <div className="release-grid release-grid--page">{content.releases.map((release, index) => <ReleaseCard key={release.title} release={release} index={index} />)}</div>
+  return <PageShell eyebrow="LISTEN" title={<>The music.<br /><span>Always moving.</span></>} intro="Every song, with its video, audio and lyrics versions. Press play right here, or open it on YouTube." number="01">
+    <div className="music-note"><Disc3 size={22} /><span>{catalogSongs.length} SONGS · VIDEOS · AUDIO · LYRICS</span></div>
+    <Catalog />
+    <Collaborations />
     <div className="platform-panel"><div><p className="eyebrow">YOUR NEXT LISTEN</p><h2>Find Eddy on your platform.</h2></div><div className="listen-grid">{content.socialLinks.map((link) => <a key={link.label} className="listen-card" href={link.href} target="_blank" rel="noreferrer"><span className="listen-icon"><BrandIcon name={link.label} size={20} /></span><div><b>{link.label}</b><small>Open on {link.label}</small></div><ArrowUpRight size={16} aria-hidden="true" /></a>)}</div></div>
   </PageShell>;
 }
 
 function VideosPage() {
-  return <PageShell eyebrow="WATCH" title={<>Visuals that<br /><span>carry the feeling.</span></>} intro="Music videos and visual stories. New videos can be added by editing the site content file." number="02">
+  return <PageShell eyebrow="WATCH" title={<>Visuals that<br /><span>carry the feeling.</span></>} intro="The newest video, the most watched songs and live performances from Uganda, South Sudan and London." number="02">
     <div className="videos-list">{content.videos.map((video) => <VideoFeature key={video.youtubeId} video={video} large />)}</div>
-    <a className="button button--accent youtube-more" href={content.youtubeChannel} target="_blank" rel="noreferrer">Visit the YouTube channel <ArrowUpRight size={17} /></a>
+    <div className="video-section"><p className="eyebrow">MOST WATCHED</p><h2>The ones everyone plays.</h2><MostWatched /></div>
+    <div className="video-section"><p className="eyebrow">ON STAGE</p><h2>Live performances.</h2><LivePerformances /></div>
+    <div className="video-actions">
+      <a className="button button--accent youtube-more" href={content.youtubeChannel} target="_blank" rel="noreferrer">Visit the YouTube channel <ArrowUpRight size={17} /></a>
+      <Link className="button button--soft youtube-more" to="/music">Browse all {catalogSongs.length} songs</Link>
+    </div>
   </PageShell>;
 }
 
 function AboutPage() {
   return <PageShell eyebrow="THE ARTIST" title={<>Meet Eddy<br /><span>Wizzy.</span></>} intro="The voice, the vision and the journey behind the music." number="03">
-    <div className="artist-bio-layout"><Photo src={content.images.about} alt={`${content.artistName} portrait`} className="artist-bio-photo" fallback="EW" /><div className="artist-bio-copy"><p className="eyebrow">MUSIC · CULTURE · CONNECTION</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><SocialLinks /></div></div>
+    <div className="artist-bio-layout"><CutoutPortrait cutout={content.images.aboutCutout} photo={content.images.about} alt={`${content.artistName} portrait`} tint="green" className="artist-bio-photo" /><div className="artist-bio-copy"><p className="eyebrow">MUSIC · CULTURE · CONNECTION</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><SocialLinks /></div></div>
     <div className="genre-row"><span>THE SOUND</span>{content.genres.map((genre, i) => <span className="genre-item" key={genre}>{i > 0 && <i>×</i>}<b>{genre}</b></span>)}</div>
     <div className="glance">{[
+      ['Role', 'Singer & songwriter'],
       ['Based in', content.locationLine],
       ['Sound', content.genres.join(' · ')],
       ['Creative home', content.moreFire.name],
-      ['Latest release', content.releases[0].title + (content.releases[0].year ? ` (${content.releases[0].year})` : '')],
+      ['Latest release', content.releases[0].title],
+      ['On YouTube', `${catalogMeta.subscribers} subscribers`],
     ].map(([label, value]) => <div className="glance-card" key={label}><small>{label}</small><b>{value}</b></div>)}</div>
     {content.milestones.length > 0 && <div className="timeline-wrap"><p className="eyebrow">THE JOURNEY</p><ol className="timeline">{content.milestones.map((item) => <li key={`${item.year}-${item.title}`}><span>{item.year}</span><div><h3>{item.title}</h3>{item.text && <p>{item.text}</p>}</div></li>)}</ol></div>}
   </PageShell>;
@@ -282,7 +290,7 @@ function AboutPage() {
 function MoreFirePage() {
   const fire = content.moreFire;
   return <div className="more-fire-page">
-    <section className="fire-hero wrap"><div className="fire-hero-copy"><p className="eyebrow"><Flame size={14} /> {fire.eyebrow}</p><h1>MORE FIRE<br /><span>ENTERTAINMENT</span><i>.</i></h1><p className="fire-tagline"><span className="sr-only">{fire.headline}</span><span aria-hidden="true">More <RotatingWord words={fire.rotatingWords} /></span></p><p className="fire-intro">{fire.intro}</p><a href="#focus" className="button button--accent">Explore the vision <ArrowDownRight size={17} /></a></div><div className="fire-hero-art"><Photo src={content.images.moreFire} alt="More Fire Entertainment visual" className="fire-photo" fallback="MF" /><div className="fire-art-stamp"><Flame size={22} /><span>MORE<br />FIRE</span></div><div className="fire-art-caption">MUSIC / PEOPLE / CULTURE</div></div></section>
+    <section className="fire-hero wrap"><div className="fire-hero-copy"><p className="eyebrow"><Flame size={14} /> {fire.eyebrow}</p><h1>MORE FIRE<br /><span>ENTERTAINMENT</span><i>.</i></h1><p className="fire-tagline"><span className="sr-only">{fire.headline}</span><span aria-hidden="true">More <RotatingWord words={fire.rotatingWords} /></span></p><p className="fire-intro">{fire.intro}</p><a href="#focus" className="button button--accent">Explore the vision <ArrowDownRight size={17} /></a></div><div className="fire-hero-art"><CutoutPortrait cutout={content.images.fireCutout} photo={content.images.moreFire} alt="Eddy Wizzy for More Fire Entertainment" tint="yellow" className="fire-photo" fallback="MF" /><div className="fire-art-stamp"><Flame size={22} /><span>MORE<br />FIRE</span></div><div className="fire-art-caption">MUSIC / PEOPLE / CULTURE</div></div></section>
     <section className="fire-manifesto"><div className="wrap manifesto-inner"><span className="manifesto-number">MF—01</span><h2>A home for<br /><em>what comes next.</em></h2><div><p>{fire.manifesto}</p></div></div></section>
     <section className="section-block wrap" id="focus"><SectionHeading eyebrow="WHAT WE STAND FOR" title="Built around the creative." text="The ideas that shape the music, the people and the projects." /><div className="focus-grid">{fire.focusAreas.map((item) => <article className="focus-card" key={item.number}><span>{item.number}</span><ArrowUpRight className="focus-arrow" size={18} /><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></section>
     <Gallery tags={['More Fire']} eyebrow="THE CREATIVE HOME" title="Inside More Fire." text="Moments from the people and sessions behind the sound." id="more-fire-gallery" />
@@ -315,7 +323,9 @@ function NotFound() {
 }
 
 const pressItems = [
-  { src: content.images.heroCutout, label: 'Transparent cut-out', file: 'eddy-wizzy-cutout' },
+  { src: content.images.heroCutout, label: 'Cut-out — red coat', file: 'eddy-wizzy-cutout-red' },
+  { src: content.images.fireCutout, label: 'Cut-out — yellow jacket', file: 'eddy-wizzy-cutout-yellow' },
+  { src: content.images.aboutCutout, label: 'Cut-out — all white', file: 'eddy-wizzy-cutout-white' },
   { src: content.images.hero, label: 'Portrait — red coat', file: 'eddy-wizzy-red-coat' },
   { src: content.images.moreFire, label: 'Portrait — yellow jacket', file: 'eddy-wizzy-yellow-jacket' },
   { src: content.images.about, label: 'Portrait — all white', file: 'eddy-wizzy-all-white' },
@@ -334,7 +344,8 @@ function PressPage() {
     ['Based in', content.locationLine],
     ['Sound', content.genres.join(' · ')],
     ['Creative home', content.moreFire.name],
-    ['Latest release', content.releases[0].title + (content.releases[0].year ? ` (${content.releases[0].year})` : '')],
+    ['Latest release', content.releases[0].title],
+    ['YouTube', `${catalogMeta.subscribers} subscribers · ${Math.floor(catalogMeta.listedViews / 1e6)}M+ views`],
   ];
   return <PageShell eyebrow="PRESS KIT" title={<>Everything<br /><span>you need.</span></>} intro="Biography, photos and contact details for media, promoters and partners.">
     <div className="press-bio">
@@ -374,9 +385,10 @@ function LinksPage() {
         <h1>{content.artistName}</h1>
         <p className="links-sub">Ugandan recording artist · {content.moreFire.name}</p>
         <div className="links-list">
-          <a className="links-btn links-btn--main" href={latest.href} target="_blank" rel="noreferrer"><Play size={18} fill="currentColor" /><span><b>Listen: {latest.title}</b><small>Latest release</small></span><ArrowUpRight size={17} /></a>
+          <a className="links-btn links-btn--main" href={latest.href} target="_blank" rel="noreferrer"><Play size={18} fill="currentColor" /><span><b>Watch: {latest.title}</b><small>Latest release</small></span><ArrowUpRight size={17} /></a>
           <a className="links-btn" href={content.youtubeChannel} target="_blank" rel="noreferrer"><BrandIcon name="YouTube" size={18} /><span><b>Watch on YouTube</b><small>Videos and music</small></span><ArrowUpRight size={17} /></a>
           {phone.length > 5 && <a className="links-btn" href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"><Smartphone size={18} /><span><b>WhatsApp</b><small>Bookings and enquiries</small></span><ArrowUpRight size={17} /></a>}
+          <Link className="links-btn" to="/music"><Headphones size={18} /><span><b>All songs and videos</b><small>{catalogSongs.length} songs to watch and listen</small></span><ArrowRight size={17} /></Link>
           <Link className="links-btn" to="/booking"><Mail size={18} /><span><b>Book Eddy Wizzy</b><small>Shows, features, collaborations</small></span><ArrowRight size={17} /></Link>
           {others.map((link) => <a key={link.label} className="links-btn" href={link.href} target="_blank" rel="noreferrer"><BrandIcon name={link.label} size={18} /><span><b>{link.label}</b></span><ArrowUpRight size={17} /></a>)}
           <Link className="links-btn" to="/"><Globe2 size={18} /><span><b>Full website</b><small>Music, videos, About, More Fire</small></span><ArrowRight size={17} /></Link>
