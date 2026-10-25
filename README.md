@@ -43,12 +43,12 @@ How it works, so nothing surprises you:
 
 ## Design and themes
 
-Soft UI (rounded surfaces, gentle raised/inset shadows) with a light and a dark theme.
+Fluent 2 styling across the whole site: Segoe UI type (falls back to the phone's own system font), 4/8/12px corners, flat neutral layers with fine outlines, soft elevation, and a light and a dark theme.
 
 - The site follows the visitor's device setting on the first visit and keeps following it if they change it.
 - The sun/moon button in the header switches theme and remembers the choice. "Match my device theme" in the footer clears the choice.
-- All colours live as variables at the top of `src/styles.css` (`:root[data-theme='dark']` and `:root[data-theme='light']`). Change the accent colour there and the whole site follows.
-- `index.html` sets the theme before the page paints, so there is no flash of the wrong theme.
+- All colours and corner sizes are variables near the bottom of `src/styles.css` (the "v10 Fluent 2" block) and at the top. Change the accent colour there and the whole site follows.
+- `index.html` sets the theme before the page paints, so there is no flash of the wrong theme. No web fonts are downloaded, which keeps pages fast on mobile data.
 
 ## Pages
 

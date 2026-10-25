@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#14171a" />
+    <meta name="theme-color" content="#111315" />
     <meta name="color-scheme" content="dark light" />
     <!-- Runs before first paint: use the saved choice, otherwise the device setting. Prevents a theme flash. -->
     <script>
@@ -15,7 +15,7 @@
           var root = document.documentElement;
           root.setAttribute('data-theme', theme);
           root.style.colorScheme = theme;
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#14171a' : '#e8ecf1');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#111315' : '#f3f5f7');
         } catch (e) {}
       })();
     </script>
@@ -60,9 +60,6 @@
         ]
       }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>
