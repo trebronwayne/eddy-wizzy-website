@@ -45,6 +45,12 @@ jobs:
           VITE_BASE: ${{ steps.pages.outputs.base_path }}/
           # Full public address, used for the link-preview image and canonical link.
           SITE_URL: ${{ steps.pages.outputs.origin }}${{ steps.pages.outputs.base_path }}
+          # Firebase web settings for the admin board (Settings > Secrets and variables > Actions > Variables).
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_NEWSLETTER_SENDER: ${{ vars.VITE_NEWSLETTER_SENDER }}
 
       # GitHub Pages serves 404.html for unknown paths. Using the app itself as the 404 page
       # lets React Router handle direct links and refreshes such as /music or /booking.

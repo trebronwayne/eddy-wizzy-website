@@ -6,11 +6,14 @@ import { siteContent } from '../data/siteContent';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '../theme';
 import { usePwaInstall } from '../pwa';
+import { cmsEnabled } from '../lib/cms';
+import { AnnouncementBar, SubscribeForm } from './Cms';
 
 const navItems = [
   { to: '/', label: 'Home' },
   { to: '/music', label: 'Music' },
   { to: '/videos', label: 'Videos' },
+  { to: '/news', label: 'News' },
   { to: '/about', label: 'About' },
   { to: '/more-fire', label: 'More Fire' },
 ];
@@ -19,6 +22,7 @@ const pageTitles = {
   '/': 'Eddy Wizzy — Official Website',
   '/music': 'Music — Eddy Wizzy',
   '/videos': 'Videos — Eddy Wizzy',
+  '/news': 'News — Eddy Wizzy',
   '/about': 'About — Eddy Wizzy',
   '/more-fire': 'More Fire Entertainment — Eddy Wizzy',
   '/booking': 'Booking & Enquiries — Eddy Wizzy',
@@ -115,10 +119,11 @@ function Footer() {
         </nav>
         <div className="footer-company">
           <span className="footer-kicker">LABEL / CREATIVE HOME</span>
-          <Link to="/more-fire">More Fire Entertainment <ArrowUpRight size={14} /></Link>
+          <Link to="/more-fire"><img className="footer-logo" src={`${import.meta.env.BASE_URL}images/more-fire-logo-sm.webp`} alt="" width="28" height="28" loading="lazy" />More Fire Entertainment <ArrowUpRight size={14} /></Link>
         </div>
         <SocialLinks compact />
       </div>
+      {cmsEnabled && <div className="wrap footer-subscribe"><div><b>Get news and new releases</b><p>One email when there is something worth sharing.</p></div><SubscribeForm source="footer" /></div>}
       <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} Eddy Wizzy. All rights reserved.</span><span className="footer-meta"><button type="button" className="footer-link" onClick={matchSystem} disabled={followsSystem}>{followsSystem ? 'Theme: matches your device' : 'Match my device theme'}</button>
           {installState === 'prompt' && <button type="button" className="install-btn" onClick={install}><Download size={14} aria-hidden="true" /> Install app</button>}
           {installState === 'ios' && <button type="button" className="install-btn" aria-expanded={iosHint} onClick={() => setIosHint((value) => !value)}><Download size={14} aria-hidden="true" /> Add to Home Screen</button>}
@@ -184,6 +189,7 @@ export default function SiteLayout() {
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
+      <AnnouncementBar />
       <Header />
       <main id="main">{loading ? <PageSkeleton /> : <Suspense fallback={<PageSkeleton />}><Outlet /></Suspense>}</main>
       <Footer />

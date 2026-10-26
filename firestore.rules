@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // An admin is anyone with a document at admins/<their user id>. Create these by hand in the console.
+    function isAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Public can read only what is switched on; only admins can change anything.
+    match /announcements/{id} {
+      allow read: if resource.data.active == true || isAdmin();
+      allow write: if isAdmin();
+    }
+    match /news/{id} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+    match /shows/{id} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Private to admins.
+    match /newsletters/{id} { allow read, write: if isAdmin(); }
+    match /mail/{id}        { allow read, write: if isAdmin(); }
+
+    // Anyone can sign up (only an email, one document per address); only admins can see or change the list.
+    match /subscribers/{email} {
+      allow create: if request.resource.data.keys().hasOnly(['email', 'source', 'createdAt'])
+        && request.resource.data.email is string
+        && request.resource.data.email == email
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.source is string && request.resource.data.source.size() <= 30
+        && request.resource.data.createdAt is timestamp;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

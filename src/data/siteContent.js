@@ -29,6 +29,7 @@ export const siteContent = {
     fireCutout: asset('images/eddy-cutout-yellow.webp'),
     about: asset('images/eddy-about.webp'),
     moreFire: asset('images/more-fire.webp'),
+    moreFireLogo: asset('images/more-fire-logo.webp'),
     myLoveCover: asset('images/my-love-cover.webp'),
   },
   // Drop photos into public/images using these names. Only photos that exist are shown;
@@ -66,6 +67,21 @@ export const siteContent = {
     ...fromCatalog(song.id), kind: 'New release', date: song.date, exact: song.exact,
     ...(i === 0 && song.id === 'pyem-tye' ? { cover: asset('images/pyem-tye-cover.webp'), credit: 'Prod. Brozy Beats / Artin Pro' } : {}),
   })),
+  // News posts that ship with the site. Posts your client adds in the admin board (/admin) appear alongside these.
+  news: [
+    {
+      id: 'independence-day-2026', title: 'Happy Independence Day, Uganda', date: '2026-10-09',
+      image: asset('images/news-independence-day.webp'), imageAlt: 'Happy Independence greeting from Eddy Wizzy and More Fire Entertainment, 9 October 2026',
+      body: 'Today, we celebrate the freedom, unity, peace and strength of our great nation. May our independence continue to inspire hope, creativity and endless opportunities for the next generation.\n\nAs we celebrate this special day, let us stand together, embrace our culture, support our talents, and keep the spirit of our nation burning brighter than ever.\n\nIndependence greetings to you all, from Eddy Wizzy and More Fire Entertainment.',
+    },
+    {
+      id: 'pyem-tye-out-now', title: 'Pyem Tye is out now', date: (songs.find((song) => song.id === 'pyem-tye') || {}).date || '2026-09-09',
+      image: asset('images/pyem-tye-cover.webp'), imageAlt: 'Pyem Tye cover art. More Fire Entertainment presents Eddy Wizzy.',
+      body: 'More Fire Entertainment presents Pyem Tye, the new song from Eddy Wizzy. Produced by Brozy Beats and Artin Pro.\n\nWatch the official dance video now.',
+      link: '/watch?v=4pMxVsvBmWU', linkLabel: 'Watch the video',
+    },
+  ],
+
   videos: [
     { title: 'Pyem Tye', subtitle: 'Official dance video', youtubeId: '4pMxVsvBmWU', href: 'https://www.youtube.com/watch?v=4pMxVsvBmWU' },
   ],

@@ -1339,3 +1339,108 @@ h1, h2, h3, h4, .wordmark-name, .vthumb-title, .footer-brand, .hero-now b, .song
 }
 .focus-card::after, .glance-card::after, .quick-fact::after, .listen-card::after, .contact-option::after, .show-row::after, .shows-empty::after { display: none; }
 @media (min-width: 1021px) { .site-footer { margin-top: 40px; padding-top: 36px; } .footer-main { gap: 28px; } }
+
+/* ==========================================================================
+   Announcements, News, Newsletter sign-up
+   ========================================================================== */
+.announce { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 16px; background: var(--accent); color: var(--on-accent); font-size: 14px; line-height: 20px; }
+.announce p { margin: 0; text-align: center; }
+.announce-link { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.announce button { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: var(--r-sm); background: transparent; color: inherit; cursor: pointer; }
+.announce button:hover { background: rgba(0, 0, 0, .12); }
+.announce :focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.news-list { display: grid; gap: 20px; max-width: 760px; }
+.news-item { padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--raised-xs); }
+.news-img { width: 100%; max-height: 360px; object-fit: cover; border-radius: var(--r); margin-bottom: 18px; }
+.news-item time { color: var(--muted); font-size: 13px; }
+.news-item h2 { margin: 4px 0 12px; font-size: 24px; line-height: 1.25; font-weight: 600; }
+.news-item p { margin: 0 0 12px; color: var(--text-2); line-height: 1.65; }
+.news-subscribe { max-width: 760px; margin-top: 32px; padding: 24px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+.news-subscribe h2 { margin: 0 0 4px; font-size: 20px; font-weight: 600; }
+.news-subscribe > p { margin: 0 0 16px; color: var(--muted); }
+
+.subscribe { width: 100%; max-width: 460px; }
+.subscribe-row { display: flex; gap: 8px; }
+.subscribe input[type='email'] { flex: 1; min-width: 0; min-height: 40px; padding: 0 12px; border: 1px solid var(--line); border-bottom-color: var(--line-strong); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); font: 400 14px var(--font-body); }
+.subscribe input[type='email']:focus { outline: none; border-bottom: 2px solid var(--accent-text); }
+.subscribe-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.subscribe-note { min-height: 20px; margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+.subscribe-note.is-error { color: #ef7a6a; }
+:root[data-theme='light'] .subscribe-note.is-error { color: #b3261e; }
+.footer-subscribe { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-block: 20px 28px; border-top: 1px solid var(--line); }
+.footer-subscribe b { display: block; font-size: 15px; }
+.footer-subscribe p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.footer-subscribe .subscribe-note { margin-bottom: 0; }
+@media (max-width: 560px) { .subscribe-row { flex-direction: column; } .subscribe .button { width: 100%; } .news-item { padding: 18px; } }
+
+/* ==========================================================================
+   Admin board (/admin) — same Fluent look as the player page
+   ========================================================================== */
+.admin-loading { min-height: 60vh; display: grid; place-items: center; color: var(--muted); }
+.ad { min-height: 100vh; padding-block: 16px 64px; }
+.fl-field { display: grid; gap: 6px; }
+.fl-field > span { font-weight: 600; font-size: 14px; }
+.fl-field > span em { color: var(--fl-brand-fg); font-style: normal; }
+.fl-field > small, .ad-muted { color: var(--fl-fg-3); font-size: 13px; line-height: 18px; margin: 0; }
+.fl-input { width: 100%; min-height: 32px; padding: 6px 10px; border: 1px solid var(--fl-stroke); border-bottom-color: var(--fl-stroke-strong); border-radius: var(--fl-r-md); background: var(--fl-layer-2); color: var(--fl-fg); font: 400 14px/20px var(--fl-font); }
+textarea.fl-input { resize: vertical; min-height: 84px; }
+.fl-input:focus { outline: none; border-bottom: 2px solid var(--fl-brand-fg); }
+.fl-check { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.fl-check input { width: 18px; height: 18px; accent-color: var(--fl-brand); }
+.ad-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0 20px; }
+.ad-brand { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+.ad-brand img, .ad-signin img { border-radius: var(--fl-r-lg); object-fit: cover; }
+.ad-user { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; color: var(--fl-fg-3); font-size: 13px; }
+.ad-user span { margin-right: 8px; }
+.ad-shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; align-items: start; }
+.ad-nav { position: sticky; top: 16px; display: grid; gap: 2px; padding: 8px; }
+.ad-nav button { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 12px; border: 0; border-radius: var(--fl-r-md); background: transparent; color: var(--fl-fg-2); font: 400 14px var(--fl-font); text-align: left; cursor: pointer; }
+.ad-nav button:hover { background: var(--fl-hover); color: var(--fl-fg); }
+.ad-nav button.is-on { background: var(--fl-brand-tint); color: var(--fl-fg); font-weight: 600; box-shadow: inset 3px 0 0 var(--fl-brand); }
+.ad-main { min-width: 0; }
+.ad-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; margin-bottom: 16px; }
+.ad-head h2, .ad-form h2 { margin: 0 0 4px; font: 600 22px/28px var(--fl-font); }
+.ad-head p { margin: 0; max-width: 560px; color: var(--fl-fg-3); }
+.ad-list { list-style: none; margin: 0; padding: 4px; }
+.ad-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 10px 12px; border-radius: var(--fl-r-lg); }
+.ad-list li + li { border-top: 1px solid var(--fl-stroke); border-radius: 0; }
+.ad-row-main { flex: 1 1 220px; min-width: 0; display: grid; }
+.ad-row-main b { overflow-wrap: anywhere; }
+.ad-row-main small { color: var(--fl-fg-3); }
+.ad-pill { padding: 0 8px; height: 20px; border-radius: 10px; border: 1px solid var(--fl-stroke-strong); color: var(--fl-fg-3); font-size: 12px; line-height: 18px; }
+.ad-pill.is-live { background: var(--fl-brand-tint); border-color: var(--fl-brand-fg); color: var(--fl-fg); }
+.ad-danger:hover { color: #ef7a6a; }
+.ad-empty { padding: 28px; text-align: center; color: var(--fl-fg-3); }
+.ad-form { display: grid; gap: 16px; max-width: 680px; padding: 24px; }
+.ad-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ad-search { max-width: 360px; margin-bottom: 12px; }
+.ad-error { margin: 0; padding: 10px 12px; border-radius: var(--fl-r-md); background: rgba(239, 122, 106, .12); border: 1px solid rgba(239, 122, 106, .4); color: var(--fl-fg); font-size: 13px; }
+.ad-center { min-height: 80vh; display: grid; place-items: center; padding: 24px; }
+.ad-signin { display: grid; gap: 14px; width: min(400px, 100%); padding: 28px; }
+.ad-signin h1 { margin: 0; font: 600 24px/30px var(--fl-font); }
+.ad-toast { position: fixed; left: 50%; bottom: 24px; z-index: 300; transform: translateX(-50%); max-width: min(520px, calc(100vw - 32px)); padding: 10px 16px; border-radius: var(--fl-r-lg); background: var(--fl-fg); color: var(--fl-canvas); font-size: 14px; box-shadow: var(--fl-shadow-16); }
+.ad-toast.is-bad { background: #b3261e; color: #fff; }
+@media (max-width: 860px) {
+  .ad-shell { grid-template-columns: minmax(0, 1fr); }
+  .ad-nav { position: static; display: flex; overflow-x: auto; scrollbar-width: none; }
+  .ad-nav button { flex: 0 0 auto; }
+  .ad-form { padding: 18px; }
+}
+
+/* ==========================================================================
+   Sample images: news posts with pictures, More Fire logo
+   ========================================================================== */
+.news-list { max-width: 840px; }
+.news-item.has-image { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 24px; align-items: start; }
+.news-img { display: block; width: auto; max-height: none; margin: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--surface-2); }
+.news-img img { display: block; width: 100%; height: auto; }
+.news-text { min-width: 0; }
+@media (max-width: 640px) { .news-item.has-image { grid-template-columns: minmax(0, 1fr); gap: 16px; } .news-img { max-width: 320px; } }
+
+.fire-mark { width: 120px; height: 120px; background: none; box-shadow: none; border-radius: 0; }
+.fire-mark img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .28)); }
+.fire-art-stamp { width: 124px; height: 124px; left: -16px; bottom: 24px; background: none; box-shadow: none; border-radius: 0; }
+.fire-art-stamp img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .45)); }
+.footer-logo { width: 28px; height: 28px; object-fit: contain; flex: 0 0 auto; }
+@media (max-width: 760px) { .fire-mark { width: 96px; height: 96px; } .fire-art-stamp { width: 96px; height: 96px; left: 0; bottom: 12px; } }

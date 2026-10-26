@@ -1,4 +1,4 @@
-import { lazy, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import {
   ArrowDownRight, ArrowRight, ArrowUpRight, Play, Disc3, Headphones,
@@ -12,6 +12,9 @@ import { Catalog, LatestRelease, LivePerformances, MostWatched } from './compone
 import { songs as catalogSongs } from './data/catalog';
 import { watchPath } from './lib/tracks';
 const WatchPage = lazy(() => import('./components/Watch'));
+const AdminPage = lazy(() => import('./admin/Admin'));
+import { NewsList, SubscribeForm } from './components/Cms';
+import { cmsEnabled, useCms } from './lib/cms';
 import { useImageSrc } from './lib/images';
 
 function Photo({ src, alt, className = '', fallback = 'EW' }) {
@@ -87,7 +90,10 @@ function Shows() {
   const photo = photos && photos[0];
   const photoStyle = photo ? { '--photo': `url(${photo.src})` } : undefined;
   const today = new Date().setHours(0, 0, 0, 0);
-  const sorted = [...content.shows].sort((a, b) => a.date.localeCompare(b.date));
+  const managed = useCms('shows', 'published').items
+    .filter((show) => show.title && /^\d{4}-\d{2}-\d{2}$/.test(show.date))
+    .map((show) => ({ title: show.title, date: show.date, time: show.time || undefined, venue: show.venue, city: show.city, href: show.ticketUrl || undefined }));
+  const sorted = [...content.shows, ...managed].sort((a, b) => a.date.localeCompare(b.date));
   const upcoming = sorted.filter((show) => dayStart(show.date) >= today);
   const past = sorted.filter((show) => dayStart(show.date) < today).reverse();
   const next = upcoming[0];
@@ -215,7 +221,7 @@ function HomePage() {
         <div className="about-preview-copy"><p className="eyebrow">BEHIND THE MUSIC</p><h2>{content.aboutTitle}</h2><p>{content.biography}</p><Link to="/about" className="text-link">More about Eddy <ArrowUpRight size={16} /></Link></div>
       </section>
 
-      <section className="more-fire-teaser"><div className="wrap more-fire-inner"><div className="fire-mark"><Flame size={54} strokeWidth={1.1} /></div><div className="more-fire-copy"><p className="eyebrow">THE CREATIVE HOME</p><h2>More Fire<br /><span>Entertainment.</span></h2><p>Meet the label and creative platform connected to Eddy Wizzy.</p><Link to="/more-fire" className="button button--accent">Explore More Fire <ArrowUpRight size={17} /></Link></div></div></section>
+      <section className="more-fire-teaser"><div className="wrap more-fire-inner"><div className="fire-mark"><img src={content.images.moreFireLogo} alt="More Fire Entertainment logo" width="120" height="120" loading="lazy" decoding="async" /></div><div className="more-fire-copy"><p className="eyebrow">THE CREATIVE HOME</p><h2>More Fire<br /><span>Entertainment.</span></h2><p>Meet the label and creative platform connected to Eddy Wizzy.</p><Link to="/more-fire" className="button button--accent">Explore More Fire <ArrowUpRight size={17} /></Link></div></div></section>
       <Shows />
       <BookingStrip />
     </>
@@ -261,7 +267,7 @@ function AboutPage() {
 function MoreFirePage() {
   const fire = content.moreFire;
   return <div className="more-fire-page">
-    <section className="fire-hero wrap"><div className="fire-hero-copy"><p className="eyebrow"><Flame size={14} /> {fire.eyebrow}</p><h1>MORE FIRE<br /><span>ENTERTAINMENT</span><i>.</i></h1><p className="fire-tagline">{fire.headline}</p><p className="fire-intro">{fire.intro}</p><a href="#focus" className="button button--accent">Explore the vision <ArrowDownRight size={17} /></a></div><div className="fire-hero-art"><CutoutPortrait cutout={content.images.fireCutout} photo={content.images.moreFire} alt="Eddy Wizzy for More Fire Entertainment" tint="yellow" className="fire-photo" fallback="MF" /><div className="fire-art-stamp"><Flame size={22} /><span>MORE<br />FIRE</span></div><div className="fire-art-caption">MUSIC / PEOPLE / CULTURE</div></div></section>
+    <section className="fire-hero wrap"><div className="fire-hero-copy"><p className="eyebrow"><Flame size={14} /> {fire.eyebrow}</p><h1>MORE FIRE<br /><span>ENTERTAINMENT</span><i>.</i></h1><p className="fire-tagline">{fire.headline}</p><p className="fire-intro">{fire.intro}</p><a href="#focus" className="button button--accent">Explore the vision <ArrowDownRight size={17} /></a></div><div className="fire-hero-art"><CutoutPortrait cutout={content.images.fireCutout} photo={content.images.moreFire} alt="Eddy Wizzy for More Fire Entertainment" tint="yellow" className="fire-photo" fallback="MF" /><div className="fire-art-stamp"><img src={content.images.moreFireLogo} alt="More Fire Entertainment logo" width="120" height="120" decoding="async" /></div><div className="fire-art-caption">MUSIC / PEOPLE / CULTURE</div></div></section>
     <section className="fire-manifesto"><div className="wrap manifesto-inner"><span className="manifesto-number">MF—01</span><h2>A home for<br /><em>what comes next.</em></h2><div><p>{fire.manifesto}</p></div></div></section>
     <section className="section-block wrap" id="focus"><SectionHeading eyebrow="WHAT WE STAND FOR" title="Built around the creative." text="The ideas that shape the music, the people and the projects." /><div className="focus-grid">{fire.focusAreas.map((item) => <article className="focus-card" key={item.number}><span>{item.number}</span><ArrowUpRight className="focus-arrow" size={18} /><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></section>
     <Gallery tags={['More Fire']} eyebrow="THE CREATIVE HOME" title="Inside More Fire." text="Moments from the people and sessions behind the sound." id="more-fire-gallery" />
@@ -370,6 +376,13 @@ function LinksPage() {
   );
 }
 
+function NewsPage() {
+  return <PageShell title="News" intro="Announcements, releases and updates from Eddy Wizzy." number="05">
+    <NewsList />
+    {cmsEnabled && <div className="news-subscribe"><h2>Get updates by email</h2><p>One email when there is something worth sharing. No spam.</p><SubscribeForm source="news" /></div>}
+  </PageShell>;
+}
+
 export default function App() {
-  return <Routes><Route path="links" element={<LinksPage />} /><Route element={<SiteLayout />}><Route index element={<HomePage />} /><Route path="music" element={<MusicPage />} /><Route path="watch" element={<WatchPage />} /><Route path="videos" element={<VideosPage />} /><Route path="about" element={<AboutPage />} /><Route path="more-fire" element={<MoreFirePage />} /><Route path="booking" element={<BookingPage />} /><Route path="press" element={<PressPage />} /><Route path="*" element={<NotFound />} /></Route></Routes>;
+  return <Routes><Route path="links" element={<LinksPage />} /><Route path="admin" element={<Suspense fallback={<div className="admin-loading">Loading…</div>}><AdminPage /></Suspense>} /><Route element={<SiteLayout />}><Route index element={<HomePage />} /><Route path="music" element={<MusicPage />} /><Route path="watch" element={<WatchPage />} /><Route path="videos" element={<VideosPage />} /><Route path="news" element={<NewsPage />} /><Route path="about" element={<AboutPage />} /><Route path="more-fire" element={<MoreFirePage />} /><Route path="booking" element={<BookingPage />} /><Route path="press" element={<PressPage />} /><Route path="*" element={<NotFound />} /></Route></Routes>;
 }
